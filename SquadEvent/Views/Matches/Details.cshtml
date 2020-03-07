@@ -1,0 +1,147 @@
+﻿@model SquadEvent.Entities.Match
+
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div>
+    <h3>Informations générales</h3>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Date)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Date)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.StartTime)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.StartTime)
+        </dd>
+        <dt class="col-sm-12">
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dd class="col-sm-12">
+            @Html.Raw(Model.Description)
+        </dd>
+    </dl>
+</div>
+<p>
+    <a asp-action="Edit" asp-route-id="@Model.MatchID">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</p>
+@*<div>
+    <div class="row">
+        @foreach (var side in Model.Sides)
+        {
+            <div class="col-md-6">
+                <p class="h4 text-center">@side.Name</p>
+            </div>
+        }
+    </div>
+</div>*@
+<div>
+    @foreach (var round in Model.Rounds)
+    {
+        <h3>@(round.GameMap?.Name ?? "Destination inconnue")</h3>
+        <hr />
+
+        <div class="row" style="margin-bottom:2em;">
+            @foreach (var side in round.Sides)
+            {
+            <div class="col-md-6">
+                @if (side.Faction != null)
+                {
+                    <h4 class="text-center"><img src="~/img/factions/@(side.Faction.ToString()).png" alt="" width="64" /><br />@Html.DisplayFor(m => @side.Faction)<br />@side.MatchSide.Name</h4>
+                }
+                else
+                {
+                    <h4 class="text-center"><img src="~/img/factions/none.png" alt="" width="64" /><br />Armée inconnue<br />@side.MatchSide.Name</h4>
+                }
+
+                <div class="d-flex">
+                    <div class="mr-1">
+                        <a class="btn btn-sm btn-secondary" href="#">Créer une squad</a>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dupliquer depuis...</button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="#">Dupliquer depuis un autre événement</a>
+                            @if (round.Number > 1)
+                            {
+                                <a class="dropdown-item" href="#">Dupliquer depuis la carte précédente</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Squad</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+            }
+        </div>
+    }
+</div>
+<div>
+    <h3>Inscrits</h3>
+    <hr />
+    <div class="row">
+        @foreach (var side in Model.Sides)
+        {
+            <div class="col-md-6">
+                <h4 class="h4 text-center">@side.Name</h4>
+                <p><a class="btn btn-secondary" href="#">+</a></p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Utilisateur</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in side.Users)
+                        {
+
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+
+    <h4>Non affiliés</h4>
+    <p><a class="btn btn-secondary" href="#">+</a></p>
+    <table>
+        <thead>
+            <tr>
+                <th>Utilisateur</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model.Users.Where(u => u.MatchSideID == null))
+            {
+
+            }
+        </tbody>
+    </table>
+</div>
+

@@ -1,0 +1,27 @@
+﻿@model SquadEvent.Models.MatchFormViewModel
+
+@{
+    ViewData["Title"] = "Créer un événement";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form asp-action="Create">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    @{await Html.RenderPartialAsync("_MatchForm");}
+
+    <div class="form-group">
+        <input type="submit" value="Create" class="btn btn-primary" />
+    </div>
+</form>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{await Html.RenderPartialAsync("_HtmlEditor");}
+    <script src="~/js/matchform.js"></script>
+}

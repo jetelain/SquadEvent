@@ -1,0 +1,119 @@
+﻿@model SquadEvent.Models.MatchFormViewModel
+<h4>Informations générales</h4>
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        <div class="form-group">
+            <label asp-for="Match.Name" class="control-label"></label>
+            <input asp-for="Match.Name" class="form-control" />
+            <span asp-validation-for="Match.Name" class="text-danger"></span>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label asp-for="Match.Date" class="control-label"></label>
+                <input asp-for="Match.Date" class="form-control" />
+                <span asp-validation-for="Match.Date" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-6">
+                <label asp-for="Match.StartTime" class="control-label"></label>
+                <input asp-for="Match.StartTime" class="form-control" />
+                <span asp-validation-for="Match.StartTime" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Match.Description" class="control-label"></label>
+            <textarea asp-for="Match.Description" class="form-control"></textarea>
+            <span asp-validation-for="Match.Description" class="text-danger"></span>
+        </div>
+    </div>
+</div>
+<h4>Equipes</h4>
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        <input type="hidden" asp-for="Match.Sides[0].MatchSideID" />
+        <input type="hidden" asp-for="Match.Sides[1].MatchSideID" />
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label asp-for="Match.Sides[0].Name" class="control-label">Nom de l'équipe A</label>
+                <input asp-for="Match.Sides[0].Name" class="form-control" />
+                <span asp-validation-for="Match.Sides[0].Name" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-6">
+                <label asp-for="Match.Sides[1].Name" class="control-label">Nom de l'équipe B</label>
+                <input asp-for="Match.Sides[1].Name" class="form-control" />
+                <span asp-validation-for="Match.Sides[1].Name" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label asp-for="Match.Sides[0].SquadsPolicy" class="control-label">Politique équipe A</label>
+                <select asp-for="Match.Sides[0].SquadsPolicy" asp-items="Html.GetEnumSelectList<SquadEvent.Entities.SquadsPolicy>()" class="form-control">
+                </select>
+                <span asp-validation-for="Match.Sides[0].SquadsPolicy" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-6">
+                <label asp-for="Match.Sides[1].SquadsPolicy" class="control-label">Politique équipe B</label>
+                <select asp-for="Match.Sides[1].SquadsPolicy" asp-items="Html.GetEnumSelectList<SquadEvent.Entities.SquadsPolicy>()" class="form-control">
+                </select>
+                <span asp-validation-for="Match.Sides[1].SquadsPolicy" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h4>Cartes</h4>
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        @for (int s = 0; s < Model.Match.Rounds.Count; ++s)
+        {
+            <input type="hidden" asp-for="Match.Rounds[s].RoundID" />
+            <input type="hidden" asp-for="Match.Rounds[s].Sides[0].RoundSideID" />
+            <input type="hidden" asp-for="Match.Rounds[s].Sides[1].RoundSideID" />
+            <div class="form-group">
+                <label asp-for="Match.Rounds[s].GameLayoutID" class="control-label">Carte @(s + 1)</label>
+                <div class="input-group">
+                    <select asp-for="Match.Rounds[s].GameLayoutID" asp-items="Model.MapsDropdownList" class="form-control map-input" data-index="@s"></select>
+                    @if (s == Model.Match.Rounds.Count - 1 && s > 0)
+                    {
+                        <div class="input-group-append">
+                            <input type="submit" value="Enlever" class="btn btn-secondary" name="removemap" />
+                        </div>
+                    }
+                </div>
+                <span asp-validation-for="Match.Rounds[s].GameLayoutID" class="text-danger"></span>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="Match.Rounds[s].Sides[0].Faction" class="control-label">Carte @(s + 1) - Camp Equipe A</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend"><img class="factionflag" /></div>
+                        <select asp-for="Match.Rounds[s].Sides[0].Faction" asp-items="Html.GetEnumSelectList<SquadEvent.SquadGameInfos.Faction>()" class="form-control faction">
+                            <option value="">(Non précisé)</option>
+                        </select>
+                    </div>
+                    <span asp-validation-for="Match.Rounds[s].Sides[0].Faction" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="Match.Rounds[s].Sides[1].Faction" class="control-label">Carte @(s + 1) - Camp Equipe B</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend"><img class="factionflag" /></div>
+                        <select asp-for="Match.Rounds[s].Sides[1].Faction" asp-items="Html.GetEnumSelectList<SquadEvent.SquadGameInfos.Faction>()" class="form-control faction">
+                            <option value="">(Non précisé)</option>
+                        </select>
+                    </div>
+                    <span asp-validation-for="Match.Rounds[s].Sides[1].Faction" class="text-danger"></span>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="form-group">
+    <input type="submit" value="Ajouter une carte" class="btn btn-secondary" name="addmap" />
+</div>
+
+<script>
+    var mapsData = @Json.Serialize(Model.MapsData.ToDictionary(d => d.GameLayoutID.ToString(), d => new { d.Left, d.Right, d.Thumbnail }));
+</script>
