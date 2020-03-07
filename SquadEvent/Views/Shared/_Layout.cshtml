@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - SquadEvent</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Sans+Pro%7CRoboto%7CRoboto&#038;ver=1.0.0" />
     <link rel="stylesheet" href="~/css/site.css" />
+    @RenderSection("Styles", required: false)
 </head>
 <body>
     <header>
@@ -41,11 +43,15 @@
                 </div>
             </div>
         </nav>
-    </header>
+    </header>    
+    <div class="title @ViewData["TitleClass"]" style="@ViewData["TitleStyle"]">
+        <div class="container">
+            @RenderSection("Title", required: false)
+        </div>
+    </div>
     <div class="container">
         <main role="main" class="pb-3">
             @RenderSection("NavBar", required: false)
-            @RenderSection("Title", required: false)
             @RenderBody()
         </main>
     </div>

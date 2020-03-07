@@ -4,11 +4,20 @@
     ViewData["Title"] = "Evénements";
 }
 
-<h1>@ViewData["Title"]</h1>
+@section NavBar  {
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+        </ol>
+    </nav>
+}
+
+@section Title { <h1><span>@ViewData["Title"]</span></h1> }
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a class="btn btn-primary" asp-action="Create">Créer un événement</a>
 </p>
+
 <table class="table">
     <thead>
         <tr>
@@ -22,20 +31,21 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                <a asp-action="Details" asp-route-id="@item.MatchID">@Html.DisplayFor(modelItem => item.Name)</a>
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StartDate)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.MatchID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.MatchID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.MatchID">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.MatchID">@Html.DisplayFor(modelItem => item.Name)</a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StartDate)
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.MatchID" class="btn btn-sm btn-outline-primary">Détails</a>
+                    <a asp-action="Edit" asp-route-id="@item.MatchID" class="btn btn-sm btn-outline-secondary">Modifier</a>
+                    <a asp-action="Delete" asp-route-id="@item.MatchID" class="btn btn-sm btn-outline-danger">Supprimer</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

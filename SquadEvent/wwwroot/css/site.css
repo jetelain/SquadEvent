@@ -1,27 +1,59 @@
 ﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
 for details on configuring this project to bundle and minify static web assets. */
 
+body {
+    color: #000c14;
+    background-color: #e2e2dc;
+    font-family: 'roboto';
+}
+
+main {
+    background-color: white;
+    padding: 1em;
+}
+
 a.navbar-brand {
-  white-space: normal;
-  text-align: center;
-  word-break: break-all;
+    white-space: normal;
+    text-align: center;
+    word-break: break-all;
 }
 
 /* Provide sufficient contrast against white background */
 a {
-  color: #0366d6;
+    color: #000c14;
 }
 
 .btn-primary {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+    color: #fff;
+    background-color: #e8ab12;
+    border-color: #e8ab12;
 }
 
-.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+.btn-primary:hover {
+    border-color: #FFAA00;
+    color: #fff;
+    background: #FFAA00;
+}
+
+.btn-outline-primary {
+    border-color: #e8ab12;
+    color: #e8ab12;
+}
+
+.btn-outline-primary:hover {
+    color: #fff;
+    background-color: #e8ab12;
+    border-color: #e8ab12;
+}
+
+.badge-primary {
+    color: #fff;
+    background-color: #e8ab12;
+}
+
+a.badge-primary:hover, a.badge-primary:focus {
+    color: #fff;
+    background-color: #FFAA00;
 }
 
 /* Sticky footer styles
@@ -76,3 +108,52 @@ img.factionflag {
     margin-bottom: auto;
     height:1.5em;
 }
+
+
+select option {
+    font-family: Arial;
+}
+
+select option:disabled {
+    color: #c0c0c0;
+}
+
+div.title {
+    background-image: url(http://qrf-reality.fr/media/2107/satisfied-soldiers-1400727d.jpg);
+    background-position: 50% 50%;
+    background-size: cover;
+    margin-top: -1em;
+    margin-bottom: 1em;
+}
+
+div.title h1 {
+    text-transform: uppercase;
+    padding: 2em 1em;
+    margin: 0;
+}
+
+div.title h1 span {
+    background-color: #000c14;
+    color: white;
+    box-shadow: 10px 0 0 #000c14,-10px 0 0 #000c14;
+}
+
+div.title p {
+    text-transform: uppercase;
+    margin-bottom: -4.3em;
+    padding-top: 4em;
+    padding-left: 2.1em;
+    font-size: 120%;
+}
+
+div.title p span {
+    background-color: #FFAA00;
+    color: white;
+    box-shadow: 10px 0 0 #FFAA00,-10px 0 0 #FFAA00;
+}
+
+main.home {
+    background-color: #e2e2dc;
+}
+
+h1{font-weight: bold;}

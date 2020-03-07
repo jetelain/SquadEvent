@@ -37,7 +37,7 @@ namespace SquadEvent.Controllers
             var match = await _context.Matchs
                 .Include(m => m.Sides).ThenInclude(s => s.Users).ThenInclude(u => u.User)
                 .Include(m => m.Rounds).ThenInclude(r => r.GameMap)
-                .Include(m => m.Rounds).ThenInclude(r => r.Sides)
+                .Include(m => m.Rounds).ThenInclude(r => r.Sides).ThenInclude(s => s.Squads)
                 .Include(m => m.Users).ThenInclude(u => u.User)
                 .FirstOrDefaultAsync(m => m.MatchID == id);
             if (match == null)
@@ -211,6 +211,13 @@ namespace SquadEvent.Controllers
             foreach (var r in match.Rounds)
             {
                 r.Sides = r.Sides.OrderBy(s => s.MatchSide.Number).ToList();
+                foreach (var s in r.Sides)
+                {
+                    if (s.Squads != null)
+                    {
+                        s.Squads = s.Squads.OrderBy(a => a.Number).ToList();
+                    }
+                }
             }
         }
 

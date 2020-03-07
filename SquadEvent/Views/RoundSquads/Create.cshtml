@@ -1,0 +1,32 @@
+﻿@model SquadEvent.Models.RoundSquadFormViewModel
+
+@{
+    ViewData["Title"] = "Créer une squad";
+}
+
+@section NavBar  {
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Matches" asp-action="Index">Evénements</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Matches" asp-action="Details" asp-route-id="@Model.Squad.Side.MatchSide.Match.MatchID">@Model.Squad.Side.MatchSide.Match.Name</a></li>
+            <li class="breadcrumb-item">@Model.Squad.Side.MatchSide.Name</li>
+            <li class="breadcrumb-item">Carte @Model.Squad.Side.Round.Number : @Model.Squad.Side.Round.GameMap.Name</li>
+            <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+        </ol>
+    </nav>
+}
+
+@section Title { <h1><span>@ViewData["Title"]</span></h1> }
+
+<form asp-action="Create">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    @{await Html.RenderPartialAsync("_RoundSquadForm");}
+    <div class="form-group">
+        <input type="submit" value="Créer" class="btn btn-primary" />
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/js/squadform.js"></script>
+}

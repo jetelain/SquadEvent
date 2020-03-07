@@ -1,6 +1,7 @@
 ﻿using SquadEvent.SquadGameInfos;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,9 +14,12 @@ namespace SquadEvent.Entities
 
         public int Number { get; set; }
 
+        [Display(Name = "Libellé")]
         public string Name { get; set; }
 
         public int RoundSideID { get; set; }
+
+        [Display(Name = "Armée")]
         public RoundSide Side { get; set; }
 
         [NotMapped]
@@ -24,8 +28,16 @@ namespace SquadEvent.Entities
             get { return Slots?.FirstOrDefault(s => s.Role == FireTeamRole.TeamLeader)?.AssignedUser; } 
         }
 
+        [Display(Name = "Permettre uniquement les emplacements prédéfinits")]
         public bool RestrictTeamComposition { get; set; }
 
+        [Display(Name = "Accès sur invitation uniquement")]
+        public bool InviteOnly { get; set; }
+
         public List<RoundSlot> Slots { get; set; }
+
+        public int SlotsCount { get; set; }
     }
+
+
 }

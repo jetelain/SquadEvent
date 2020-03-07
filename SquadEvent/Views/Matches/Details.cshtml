@@ -4,7 +4,16 @@
     ViewData["Title"] = Model.Name;
 }
 
-<h1>@ViewData["Title"]</h1>
+@section NavBar  {
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index">Evénements</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+        </ol>
+    </nav>
+}
+
+@section Title { <h1><span>@ViewData["Title"]</span></h1> }
 
 <div>
     <h3>Informations générales</h3>
@@ -37,65 +46,80 @@
     </dl>
 </div>
 <p>
-    <a asp-action="Edit" asp-route-id="@Model.MatchID">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Edit" asp-route-id="@Model.MatchID" class="btn btn-sm btn-outline-primary">Modifier</a>
 </p>
 @*<div>
-    <div class="row">
-        @foreach (var side in Model.Sides)
-        {
-            <div class="col-md-6">
-                <p class="h4 text-center">@side.Name</p>
-            </div>
-        }
-    </div>
-</div>*@
+        <div class="row">
+            @foreach (var side in Model.Sides)
+            {
+                <div class="col-md-6">
+                    <p class="h4 text-center">@side.Name</p>
+                </div>
+            }
+        </div>
+    </div>*@
 <div>
     @foreach (var round in Model.Rounds)
     {
-        <h3>@(round.GameMap?.Name ?? "Destination inconnue")</h3>
+        <h3><a name="round-@round.RoundID"></a>@(round.GameMap?.Name ?? "Destination inconnue")</h3>
         <hr />
 
         <div class="row" style="margin-bottom:2em;">
             @foreach (var side in round.Sides)
             {
-            <div class="col-md-6">
-                @if (side.Faction != null)
-                {
-                    <h4 class="text-center"><img src="~/img/factions/@(side.Faction.ToString()).png" alt="" width="64" /><br />@Html.DisplayFor(m => @side.Faction)<br />@side.MatchSide.Name</h4>
-                }
-                else
-                {
-                    <h4 class="text-center"><img src="~/img/factions/none.png" alt="" width="64" /><br />Armée inconnue<br />@side.MatchSide.Name</h4>
-                }
+                <div class="col-md-6">
+                    @if (side.Faction != null)
+                    {
+                        <h4 class="text-center"><img src="~/img/factions/@(side.Faction.ToString()).png" alt="" width="64" /><br />@Html.DisplayFor(m => @side.Faction)<br />@side.MatchSide.Name</h4>
+                    }
+                    else
+                    {
+                        <h4 class="text-center"><img src="~/img/factions/none.png" alt="" width="64" /><br />Armée inconnue<br />@side.MatchSide.Name</h4>
+                    }
 
-                <div class="d-flex">
-                    <div class="mr-1">
-                        <a class="btn btn-sm btn-secondary" href="#">Créer une squad</a>
-                    </div>
-                    <div class="dropdown">
-                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dupliquer depuis...</button>
-                        <div class="dropdown-menu">
-                            <a class="dropdown-item" href="#">Dupliquer depuis un autre événement</a>
-                            @if (round.Number > 1)
-                            {
-                                <a class="dropdown-item" href="#">Dupliquer depuis la carte précédente</a>
-                            }
+                    <div class="d-flex mt-1 mb-1">
+                        <div class="mr-1">
+                            <a class="btn btn-sm btn-primary" asp-controller="RoundSquads" asp-action="Create" asp-route-roundSideID="@side.RoundSideID">Créer une squad</a>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dupliquer depuis...</button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="#">Dupliquer depuis un autre événement</a>
+                                @if (round.Number > 1)
+                                {
+                                    <a class="dropdown-item" href="#">Dupliquer depuis la carte précédente</a>
+                                }
+                            </div>
                         </div>
                     </div>
+                    <table class="table">
+                        <colgroup>
+                            <col width="20" />
+                            <col />
+                            <col width="200" />
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Libellé</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var squad in side.Squads)
+                            {
+                                <tr>
+                                    <td><a asp-controller="RoundSquads" asp-action="Details" asp-route-id="@squad.RoundSquadID">@Html.DisplayFor(model => squad.Number)</a></td>
+                                    <td><a asp-controller="RoundSquads" asp-action="Details" asp-route-id="@squad.RoundSquadID">@Html.DisplayFor(model => squad.Name)</a></td>
+                                    <td>
+                                        <a asp-controller="RoundSquads" asp-action="Edit" asp-route-id="@squad.RoundSquadID" class="btn btn-sm btn-outline-secondary">Modifier</a>
+                                        <a asp-controller="RoundSquads" asp-action="Delete" asp-route-id="@squad.RoundSquadID" class="btn btn-sm btn-outline-danger">Supprimer</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Squad</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-
-                    </tbody>
-                </table>
-            </div>
             }
         </div>
     }
@@ -108,8 +132,8 @@
         {
             <div class="col-md-6">
                 <h4 class="h4 text-center">@side.Name</h4>
-                <p><a class="btn btn-secondary" href="#">+</a></p>
-                <table>
+                <p><a class="btn btn-primary" href="#">+</a></p>
+                <table class="table">
                     <thead>
                         <tr>
                             <th>Utilisateur</th>
@@ -128,8 +152,8 @@
     </div>
 
     <h4>Non affiliés</h4>
-    <p><a class="btn btn-secondary" href="#">+</a></p>
-    <table>
+    <p><a class="btn btn-primary" href="#">+</a></p>
+    <table class="table">
         <thead>
             <tr>
                 <th>Utilisateur</th>

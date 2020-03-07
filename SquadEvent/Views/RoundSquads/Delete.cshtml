@@ -1,0 +1,62 @@
+﻿@model SquadEvent.Entities.RoundSquad
+
+@{
+    ViewData["Title"] = "Supprimer une squad";
+}
+
+@section NavBar  {
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Matches" asp-action="Index">Evénements</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Matches" asp-action="Details" asp-route-id="@Model.Side.MatchSide.Match.MatchID">@Model.Side.MatchSide.Match.Name</a></li>
+            <li class="breadcrumb-item">@Model.Side.MatchSide.Name</li>
+            <li class="breadcrumb-item">Carte @Model.Side.Round.Number : @Model.Side.Round.GameMap.Name</li>
+            <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+        </ol>
+    </nav>
+}
+
+@section Title { <h1><span>@ViewData["Title"]</span></h1> }
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>RoundSquad</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Number)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Number)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Side)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Side.RoundSideID)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.RestrictTeamComposition)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.RestrictTeamComposition)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.InviteOnly)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.InviteOnly)
+        </dd>
+    </dl>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="RoundSquadID" />
+        <input type="submit" value="Supprimer" class="btn btn-danger" />
+    </form>
+</div>

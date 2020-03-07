@@ -1,6 +1,7 @@
 ﻿using SquadEvent.SquadGameInfos;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,6 +20,7 @@ namespace SquadEvent.Entities
 
         public int MatchSideID { get; set; }
 
+        [Display(Name="Equipe")]
         public MatchSide MatchSide { get; set; }
 
         public Faction? Faction { get; set; }

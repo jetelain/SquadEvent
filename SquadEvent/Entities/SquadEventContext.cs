@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using SquadEvent.Entities;
 
 namespace SquadEvent.Entities
 {
@@ -20,7 +21,7 @@ namespace SquadEvent.Entities
         public DbSet<GameLayout> Layouts { get; set; }
         public DbSet<GameMap> Maps { get; set; }
         public DbSet<Round> Rounds { get; set; }
-
+        public DbSet<RoundSide> RoundSides { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>().ToTable("User");
@@ -32,7 +33,7 @@ namespace SquadEvent.Entities
             modelBuilder.Entity<Round>().ToTable("Round");
             modelBuilder.Entity<RoundSide>().ToTable("RoundSide");
             modelBuilder.Entity<RoundSquad>().ToTable("RoundSquad");
-            modelBuilder.Entity<RoundSlot>().ToTable("RoundSlot");
+            modelBuilder.Entity<RoundSlot>().ToTable("RoundSlot").HasOne(t => t.Squad).WithMany(s => s.Slots).OnDelete(DeleteBehavior.Cascade); ;
         }
 
         internal void InitBaseData()
@@ -71,5 +72,8 @@ namespace SquadEvent.Entities
                 SaveChanges();
             }
         }
+
+        public DbSet<SquadEvent.Entities.RoundSquad> RoundSquads { get; set; }
+        public DbSet<SquadEvent.Entities.RoundSlot> RoundSlots { get; set; }
     }
 }
