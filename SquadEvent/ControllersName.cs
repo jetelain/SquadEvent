@@ -17,5 +17,6 @@ namespace SquadEvent
         public static readonly string AdminMatchs = Name<Controllers.AdminMatchsController>(); 
         public static readonly string AdminSquads = Name<Controllers.AdminSquadsController>();
         public static readonly string Authentication = Name<Controllers.AuthenticationController>();
+        public static readonly string AdminMatchUsers = Name<Controllers.AdminMatchUsersController>();
     }
 }

@@ -32,7 +32,7 @@ namespace SquadEvent.Controllers
                 .Include(r => r.Side).ThenInclude(r => r.MatchSide).ThenInclude(r => r.Match)
                 .Include(r => r.Side).ThenInclude(r => r.Round).ThenInclude(r => r.Match)
                 .Include(r => r.Side).ThenInclude(r => r.Round).ThenInclude(r => r.GameMap)
-                .Include(r => r.Slots)
+                .Include(r => r.Slots).ThenInclude(s => s.AssignedUser).ThenInclude(u => u.User)
                 .FirstOrDefaultAsync(m => m.RoundSquadID == id);
             if (roundSquad == null)
             {

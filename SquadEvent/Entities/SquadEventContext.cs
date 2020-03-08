@@ -17,11 +17,16 @@ namespace SquadEvent.Entities
         }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<MatchUser> MatchUsers { get; set; }
+        public DbSet<MatchSide> MatchSides { get; set; }
         public DbSet<Match> Matchs { get; set; }
         public DbSet<GameLayout> Layouts { get; set; }
         public DbSet<GameMap> Maps { get; set; }
         public DbSet<Round> Rounds { get; set; }
         public DbSet<RoundSide> RoundSides { get; set; }
+        public DbSet<RoundSquad> RoundSquads { get; set; }
+        public DbSet<RoundSlot> RoundSlots { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>().ToTable("User");
@@ -55,7 +60,7 @@ namespace SquadEvent.Entities
             if (!Layouts.Any())
             {
                 var lines = File.ReadAllLines("SquadLayouts.csv").Skip(1);
-                foreach(var line in lines)
+                foreach (var line in lines)
                 {
                     var items = line.Split(';');
                     var name = items[0];
@@ -71,9 +76,16 @@ namespace SquadEvent.Entities
                 }
                 SaveChanges();
             }
+
+            if (!Users.Any())
+            {
+                for(int i=1;i<=80;++i)
+                {
+                    Users.Add(new User() { Name = $"User {i}", SteamId = "XXXXXXXXX" });
+                    SaveChanges();
+                }
+            }
         }
 
-        public DbSet<SquadEvent.Entities.RoundSquad> RoundSquads { get; set; }
-        public DbSet<SquadEvent.Entities.RoundSlot> RoundSlots { get; set; }
     }
 }

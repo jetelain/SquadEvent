@@ -7,7 +7,7 @@
 @section NavBar  {
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-action="Index">Evénements</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">Administration</a></li>
             <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
         </ol>
     </nav>
@@ -68,15 +68,7 @@
             @foreach (var side in round.Sides)
             {
                 <div class="col-md-6">
-                    @if (side.Faction != null)
-                    {
-                        <h4 class="text-center"><img src="~/img/factions/@(side.Faction.ToString()).png" alt="" width="64" /><br />@Html.DisplayFor(m => @side.Faction)<br />@side.MatchSide.Name</h4>
-                    }
-                    else
-                    {
-                        <h4 class="text-center"><img src="~/img/factions/none.png" alt="" width="64" /><br />Armée inconnue<br />@side.MatchSide.Name</h4>
-                    }
-
+                    <h4 class="text-center"><img src="@ViewHelper.Icon(side.Faction)" alt="" width="64" /><br />@Html.DisplayFor(m => @side.Faction)<br />@side.MatchSide.Name</h4>
                     <div class="d-flex mt-1 mb-1">
                         <div class="mr-1">
                             <a class="btn btn-sm btn-primary" asp-controller="@ControllersName.AdminSquads" asp-action="Create" asp-route-roundSideID="@side.RoundSideID">Créer une squad</a>
@@ -109,7 +101,7 @@
                             @foreach (var squad in side.Squads)
                             {
                                 <tr>
-                                    <td><a asp-controller="@ControllersName.AdminSquads" asp-action="Details" asp-route-id="@squad.RoundSquadID">@Html.DisplayFor(model => squad.Number)</a></td>
+                                    <td><a class="badge badge-dark" asp-controller="@ControllersName.AdminSquads" asp-action="Details" asp-route-id="@squad.RoundSquadID">@Html.DisplayFor(model => squad.Number)</a></td>
                                     <td><a asp-controller="@ControllersName.AdminSquads" asp-action="Details" asp-route-id="@squad.RoundSquadID">@Html.DisplayFor(model => squad.Name)</a></td>
                                     <td>
                                         <a asp-controller="@ControllersName.AdminSquads" asp-action="Edit" asp-route-id="@squad.RoundSquadID" class="btn btn-sm btn-outline-secondary">Modifier</a>
@@ -125,25 +117,57 @@
     }
 </div>
 <div>
-    <h3>Inscrits</h3>
+    <h3><a name="users"></a>Inscrits (@Model.Users.Count())</h3>
     <hr />
     <div class="row" style="margin-bottom:2em;">
         @foreach (var side in Model.Sides)
         {
             <div class="col-md-6">
-                <h4 class="text-center">@side.Name</h4>
+                <h4 class="text-center">@side.Name (@side.Users.Count())</h4>
                 <p><a class="btn btn-sm btn-outline-primary" href="#">Lien d'invitation</a></p>
                 <table class="table">
                     <thead>
                         <tr>
                             <th>Utilisateur</th>
+                            @foreach (var round in Model.Rounds)
+                            {
+                                <th>Carte @round.Number</th>
+                            }
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var user in side.Users)
                         {
+                        <tr>
+                            <td>
+                                <a asp-controller="@ControllersName.AdminMatchUsers" asp-action="Details" asp-route-id="@user.MatchUserID">
+                                    @user.User.Name
+                                </a>
+                            </td>
+                            @foreach (var round in Model.Rounds)
+                            {
+                                var slot = user.Slots.FirstOrDefault(s => s.Squad.Side.RoundID == round.RoundID);
 
+                                if (slot == null)
+                                {
+                                    <td>(non assigné)</td>
+                                }
+                                else
+                                {
+                                    <td>
+                                        <span class="badge badge-dark">@slot.Squad.Number - @Html.DisplayFor(m => slot.Role)</span>
+                                        <img src="@ViewHelper.Icon(slot.Role)" width="11" height="13" alt="@slot.Role" title="@Html.DisplayFor(m => slot.Role)" />
+                                        <img src="@ViewHelper.Icon(slot.AssignedKit)" height="13" alt="@slot.AssignedKit"title="@Html.DisplayFor(m => slot.AssignedKit)" />
+                                    </td>
+                                }
+                            }
+                        <td>
+                            <a class="btn btn-sm btn-outline-secondary" asp-controller="@ControllersName.AdminMatchUsers" asp-action="Edit" asp-route-id="@user.MatchUserID">
+                                Modifier
+                            </a>
+                        </td>
+                        </tr>
                         }
                     </tbody>
                 </table>
@@ -151,8 +175,12 @@
         }
     </div>
 
-    <h4 class="text-center">Non affiliés</h4>
-    <p><a class="btn btn-sm btn-outline-primary" href="#">Lien d'invitation</a></p>
+    <h4 class="text-center"><a name="unassigned"></a>Non affiliés (@Model.Users.Count(u => u.MatchSideID == null))</h4>
+    <p>
+        
+        <a class="btn btn-sm btn-outline-primary" href="#">Lien d'invitation</a>
+        <a class="btn btn-sm btn-outline-primary" asp-action="AddRamdomUsers" asp-route-id="@Model.MatchID">[TEST] Ajouter des utilisateurs au hasard</a>
+    </p>
     <table class="table">
         <thead>
             <tr>
@@ -163,7 +191,20 @@
         <tbody>
             @foreach (var user in Model.Users.Where(u => u.MatchSideID == null))
             {
-
+                <tr>
+                    <td>
+                        <a asp-controller="@ControllersName.AdminMatchUsers" asp-action="Details" asp-route-id="@user.MatchUserID">
+                            @user.User.Name
+                        </a>
+                    </td>
+                    <td>
+                        <form asp-action="SetUserSide" asp-route-matchUserId="@user.MatchUserID">
+                            <button name="matchSideId" value="@Model.Sides[0].MatchSideID" class="btn btn-sm btn-outline-secondary">@Model.Sides[0].Name</button>
+                            <button name="matchSideId" value="@Model.Sides[1].MatchSideID" class="btn btn-sm btn-outline-secondary">@Model.Sides[1].Name</button>
+                            <a asp-controller="@ControllersName.AdminMatchUsers" asp-action="Delete" asp-route-id="@user.MatchUserID" class="btn btn-sm btn-outline-danger">Exclure</a>
+                        </form>
+                    </td>
+                </tr>
             }
         </tbody>
     </table>

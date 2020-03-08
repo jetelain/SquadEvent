@@ -33,12 +33,12 @@ namespace SquadEvent.Controllers
             {
                 return NotFound();
             }
-
             var match = await _context.Matchs
-                .Include(m => m.Sides).ThenInclude(s => s.Users).ThenInclude(u => u.User)
+                .Include(m => m.Sides)
                 .Include(m => m.Rounds).ThenInclude(r => r.GameMap)
                 .Include(m => m.Rounds).ThenInclude(r => r.Sides).ThenInclude(s => s.Squads)
                 .Include(m => m.Users).ThenInclude(u => u.User)
+                .Include(m => m.Users).ThenInclude(u => u.Slots)
                 .FirstOrDefaultAsync(m => m.MatchID == id);
             if (match == null)
             {
@@ -160,6 +160,32 @@ namespace SquadEvent.Controllers
             vm.MapsData = maps;
         }
 
+        public async Task<IActionResult> AddRamdomUsers(int id)
+        {
+            var rnd = new Random();
+            var users = (await _context.Users.ToListAsync()).OrderBy(elem => rnd.Next()).Take(80);
+
+            _context.AddRange(users.Select(u => new MatchUser() { UserID = u.UserID, MatchID = id }));
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Details), ControllersName.AdminMatchs, new { id }, "users");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SetUserSide(int matchUserId, [FromForm]int matchSideId)
+        {
+            var matchUser = await _context.MatchUsers.FindAsync(matchUserId);
+
+            matchUser.MatchSideID = matchSideId;
+
+            _context.Update(matchUser);
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Details), ControllersName.AdminMatchs, new { id = matchUser.MatchID }, "unassigned");
+        }
+        
         // POST: Matches/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -287,6 +313,11 @@ namespace SquadEvent.Controllers
                     }
                 }
             }
+            foreach (var s in match.Sides)
+            {
+                s.Users = s.Users.OrderBy(s => s.User.Name).ToList();
+            }
+            match.Users = match.Users.OrderBy(s => s.User.Name).ToList();
         }
 
         // POST: Matches/Edit/5

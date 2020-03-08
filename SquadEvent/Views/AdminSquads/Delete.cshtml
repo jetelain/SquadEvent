@@ -7,7 +7,7 @@
 @section NavBar  {
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-controller="@ControllersName.AdminMatchs" asp-action="Index">Evénements</a></li>
+            <li class="breadcrumb-item"><a asp-controller="@ControllersName.AdminMatchs" asp-action="Index">Administration</a></li>
             <li class="breadcrumb-item"><a asp-controller="@ControllersName.AdminMatchs" asp-action="Details" asp-route-id="@Model.Side.MatchSide.Match.MatchID">@Model.Side.MatchSide.Match.Name</a></li>
             <li class="breadcrumb-item">@Model.Side.MatchSide.Name</li>
             <li class="breadcrumb-item">Carte @Model.Side.Round.Number : @Model.Side.Round.GameMap.Name</li>

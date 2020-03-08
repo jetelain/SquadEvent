@@ -1,0 +1,98 @@
+﻿@model SquadEvent.Models.MatchUserEditViewModel
+
+@{
+    ViewData["Title"] = Model.MatchUser.User.Name;
+}
+
+@section NavBar  {
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="@ControllersName.AdminMatchs" asp-action="Index">Administration</a></li>
+            <li class="breadcrumb-item"><a asp-controller="@ControllersName.AdminMatchs" asp-action="Details" asp-route-id="@Model.MatchUser.Match.MatchID">@Model.MatchUser.Match.Name</a></li>
+            @if (Model.MatchUser.Side != null)
+            {
+                <li class="breadcrumb-item">@Model.MatchUser.Side.Name</li>
+            }
+            <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+        </ol>
+    </nav>
+}
+
+@section Title { <h1><span>@ViewData["Title"]</span></h1> }
+
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="MatchUser.MatchUserID" />
+            <input type="hidden" asp-for="MatchUser.MatchID" />
+            <input type="hidden" asp-for="MatchUser.UserID" />
+            <div class="form-group">
+                <label asp-for="MatchUser.MatchSideID" class="control-label"></label>
+                <select asp-for="MatchUser.MatchSideID" class="form-control" asp-items="Model.MatchSideDropdownList" id="matchSide">
+                    <option value="">(Non affecté)</option>
+                </select>
+                <span asp-validation-for="MatchUser.MatchSideID" class="text-danger"></span>
+            </div>
+            @for (int i = 0; i < Model.SlotPerRound.Count; ++i)
+            {
+                var round = Model.SlotPerRound[i];
+                <div class="form-group">
+                    <label asp-for="SlotPerRound[i].RoundSlotID" class="control-label">
+                        Emplacement pour carte @round.Round.Number: @round.Round.GameMap.Name
+                    </label>
+                    <select asp-for="SlotPerRound[i].RoundSlotID" class="form-control roundSlot">
+                        <option value="">(Aucun)</option>
+                        @foreach (var side in round.Round.Sides)
+                        {
+                            @foreach (var squad in side.Squads)
+                            {
+                                <optgroup label="@squad.Name" data-side="@side.MatchSideID">
+                                    @foreach (var slot in squad.Slots)
+                                    {
+                                    <option value="@slot.RoundSlotID" disabled="@(slot.MatchUserID != null && slot.MatchUserID != Model.MatchUser.MatchUserID ? "disabled" : null)">
+                                        @if (!string.IsNullOrEmpty(slot.Label))
+                                        {
+                                            @slot.Label
+                                        }
+                                        else
+                                        {
+                                            @Html.DisplayFor(m => slot.Role) @:- @Html.DisplayFor(m => slot.AssignedKit)
+                                        }
+                                    </option>
+                                    }
+                                </optgroup>
+                            }
+                        }
+                    </select>
+                    <span asp-validation-for="SlotPerRound[i].RoundSlotID" class="text-danger"></span>
+                </div>
+            }
+            <div class="form-group">
+                <input type="submit" value="Enregistrer" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+
+        function updateSlots(matchSideId) {
+            $('.roundSlot optgroup[data-side="' + Number(matchSideId) + '"]').show();
+            $('.roundSlot optgroup[data-side!="' + Number(matchSideId) + '"]').hide();
+
+        }
+
+
+        $(function () {
+            var matchSide = $('#matchSide');
+            updateSlots(matchSide.val());
+            matchSide.on('change', function () {updateSlots(matchSide.val()); });
+            
+        });
+
+
+    </script>
+}
