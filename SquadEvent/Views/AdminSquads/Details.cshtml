@@ -7,8 +7,8 @@
 @section NavBar  {
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-controller="Matches" asp-action="Index">Evénements</a></li>
-            <li class="breadcrumb-item"><a asp-controller="Matches" asp-action="Details" asp-route-id="@Model.Side.MatchSide.Match.MatchID">@Model.Side.MatchSide.Match.Name</a></li>
+            <li class="breadcrumb-item"><a asp-controller="@ControllersName.AdminMatchs" asp-action="Index">Evénements</a></li>
+            <li class="breadcrumb-item"><a asp-controller="@ControllersName.AdminMatchs" asp-action="Details" asp-route-id="@Model.Side.MatchSide.Match.MatchID">@Model.Side.MatchSide.Match.Name</a></li>
             <li class="breadcrumb-item">@Model.Side.MatchSide.Name</li>
             <li class="breadcrumb-item">Carte @Model.Side.Round.Number : @Model.Side.Round.GameMap.Name</li>
             <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
@@ -79,6 +79,8 @@
     <h4>Emplacements</h4>
     <hr />
 
+    <p><a class="btn btn-sm btn-outline-primary" href="#">Lien d'invitation</a></p>
+
     <table class="table">
         <colgroup>
             <col width="100" />
@@ -96,20 +98,20 @@
         <tbody>
             @foreach (var slot in Model.Slots)
             {
-            <tr>
-                <td>@Html.DisplayFor(m => slot.Role)</td>
-                <td>
-                    @if (slot.AssignedKit != null)
-                    {
-                        <img src="~/img/kits/@(slot.AssignedKit.ToString()).png" width="32" />
-                    }
-                </td>
-                <td>
-                    @Html.DisplayFor(m => slot.AssignedKit)
-                </td>
-                <td>@Html.DisplayFor(m => slot.Label)</td>
-                <td>@Html.DisplayFor(m => slot.AssignedUser.User.Name)</td>
-            </tr>
+                <tr>
+                    <td>@Html.DisplayFor(m => slot.Role)</td>
+                    <td>
+                        @if (slot.AssignedKit != null)
+                        {
+                            <img src="~/img/kits/@(slot.AssignedKit.ToString()).png" width="32" />
+                        }
+                    </td>
+                    <td>
+                        @Html.DisplayFor(m => slot.AssignedKit)
+                    </td>
+                    <td>@Html.DisplayFor(m => slot.Label)</td>
+                    <td>@Html.DisplayFor(m => slot.AssignedUser.User.Name)</td>
+                </tr>
             }
         </tbody>
 

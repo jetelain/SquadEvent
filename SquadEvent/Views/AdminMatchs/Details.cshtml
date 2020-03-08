@@ -79,7 +79,7 @@
 
                     <div class="d-flex mt-1 mb-1">
                         <div class="mr-1">
-                            <a class="btn btn-sm btn-primary" asp-controller="RoundSquads" asp-action="Create" asp-route-roundSideID="@side.RoundSideID">Créer une squad</a>
+                            <a class="btn btn-sm btn-primary" asp-controller="@ControllersName.AdminSquads" asp-action="Create" asp-route-roundSideID="@side.RoundSideID">Créer une squad</a>
                         </div>
                         <div class="dropdown">
                             <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dupliquer depuis...</button>
@@ -87,7 +87,7 @@
                                 <a class="dropdown-item" href="#">Dupliquer depuis un autre événement</a>
                                 @if (round.Number > 1)
                                 {
-                                    <a class="dropdown-item" href="#">Dupliquer depuis la carte précédente</a>
+                                    <a class="dropdown-item" asp-action="DuplicateFromPrevious" asp-route-id="@Model.MatchID" asp-route-roundId="@side.RoundID" asp-route-roundSideID="@side.RoundSideID">Dupliquer depuis la carte précédente</a>
                                 }
                             </div>
                         </div>
@@ -109,11 +109,11 @@
                             @foreach (var squad in side.Squads)
                             {
                                 <tr>
-                                    <td><a asp-controller="RoundSquads" asp-action="Details" asp-route-id="@squad.RoundSquadID">@Html.DisplayFor(model => squad.Number)</a></td>
-                                    <td><a asp-controller="RoundSquads" asp-action="Details" asp-route-id="@squad.RoundSquadID">@Html.DisplayFor(model => squad.Name)</a></td>
+                                    <td><a asp-controller="@ControllersName.AdminSquads" asp-action="Details" asp-route-id="@squad.RoundSquadID">@Html.DisplayFor(model => squad.Number)</a></td>
+                                    <td><a asp-controller="@ControllersName.AdminSquads" asp-action="Details" asp-route-id="@squad.RoundSquadID">@Html.DisplayFor(model => squad.Name)</a></td>
                                     <td>
-                                        <a asp-controller="RoundSquads" asp-action="Edit" asp-route-id="@squad.RoundSquadID" class="btn btn-sm btn-outline-secondary">Modifier</a>
-                                        <a asp-controller="RoundSquads" asp-action="Delete" asp-route-id="@squad.RoundSquadID" class="btn btn-sm btn-outline-danger">Supprimer</a>
+                                        <a asp-controller="@ControllersName.AdminSquads" asp-action="Edit" asp-route-id="@squad.RoundSquadID" class="btn btn-sm btn-outline-secondary">Modifier</a>
+                                        <a asp-controller="@ControllersName.AdminSquads" asp-action="Delete" asp-route-id="@squad.RoundSquadID" class="btn btn-sm btn-outline-danger">Supprimer</a>
                                     </td>
                                 </tr>
                             }
@@ -127,12 +127,12 @@
 <div>
     <h3>Inscrits</h3>
     <hr />
-    <div class="row">
+    <div class="row" style="margin-bottom:2em;">
         @foreach (var side in Model.Sides)
         {
             <div class="col-md-6">
-                <h4 class="h4 text-center">@side.Name</h4>
-                <p><a class="btn btn-primary" href="#">+</a></p>
+                <h4 class="text-center">@side.Name</h4>
+                <p><a class="btn btn-sm btn-outline-primary" href="#">Lien d'invitation</a></p>
                 <table class="table">
                     <thead>
                         <tr>
@@ -151,8 +151,8 @@
         }
     </div>
 
-    <h4>Non affiliés</h4>
-    <p><a class="btn btn-primary" href="#">+</a></p>
+    <h4 class="text-center">Non affiliés</h4>
+    <p><a class="btn btn-sm btn-outline-primary" href="#">Lien d'invitation</a></p>
     <table class="table">
         <thead>
             <tr>

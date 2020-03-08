@@ -11,11 +11,11 @@ using SquadEvent.SquadGameInfos;
 
 namespace SquadEvent.Controllers
 {
-    public class MatchesController : Controller
+    public class AdminMatchsController : Controller
     {
         private readonly SquadEventContext _context;
 
-        public MatchesController(SquadEventContext context)
+        public AdminMatchsController(SquadEventContext context)
         {
             _context = context;
         }
@@ -47,6 +47,74 @@ namespace SquadEvent.Controllers
             SortModel(match);
             return View(match);
         }
+
+
+        public async Task<IActionResult> DuplicateFromPrevious(int roundSideID)
+        {
+            var roundSide = _context.RoundSides
+                .Include(rs => rs.Round)
+                .Include(rs => rs.Squads).ThenInclude(s => s.Slots)
+                .FirstOrDefault(s => s.RoundSideID == roundSideID);
+            if (roundSide == null)
+            {
+                return NotFound();
+            }
+            var round = roundSide.Round;
+
+            var previousRound= _context.Rounds.FirstOrDefault(r => r.MatchID == round.MatchID && r.Number == round.Number - 1);
+            if (previousRound == null)
+            {
+                return NotFound();
+            }
+
+            var previousRoundSide = _context.RoundSides
+                .Include(rs => rs.Round)
+                .Include(rs => rs.Squads).ThenInclude(s => s.Slots)
+                .FirstOrDefault(s => s.RoundID == previousRound.RoundID && s.MatchSideID == roundSide.MatchSideID);
+            if (previousRoundSide == null)
+            {
+                return NotFound();
+            }
+
+            await DuplicateSquadsAndSlots(previousRoundSide, roundSide);
+
+            return RedirectToAction(nameof(Details), ControllersName.AdminMatchs, new { id = round.MatchID }, "round-" + previousRound.RoundID);
+        }
+
+        private async Task DuplicateSquadsAndSlots(RoundSide source, RoundSide target)
+        {
+            _context.RemoveRange(target.Squads);
+
+            target.Squads = source.Squads.Select(s => CuplicateSquadAndSlots(target, s)).ToList();
+
+            _context.AddRange(target.Squads);
+
+            await _context.SaveChangesAsync();
+        }
+
+        private static RoundSquad CuplicateSquadAndSlots(RoundSide target, RoundSquad s)
+        {
+            var copy = new RoundSquad()
+            {
+                InviteOnly = s.InviteOnly,
+                Name = s.Name,
+                Number = s.Number,
+                RestrictTeamComposition = s.RestrictTeamComposition,
+                SlotsCount = s.SlotsCount,
+                RoundSideID = target.RoundSideID,
+            };
+            copy.Slots = s.Slots.Select(p => new RoundSlot()
+            {
+                AssignedKit = p.AssignedKit,
+                Label = p.Label,
+                MatchUserID = p.MatchUserID,
+                Role = p.Role,
+                SlotNumber = p.SlotNumber,
+                Squad = copy
+            }).ToList();
+            return copy;
+        }
+
 
         // GET: Matches/Create
         public async Task<IActionResult> Create()

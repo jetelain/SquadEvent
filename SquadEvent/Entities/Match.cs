@@ -41,6 +41,9 @@ namespace SquadEvent.Entities
             }
         }
 
+        [Display(Name = "Accès sur invitation uniquement")]
+        public bool InviteOnly { get; set; }
+
         public List<Round> Rounds { get; set; }
         public List<MatchSide> Sides { get; set; }
         public List<MatchUser> Users { get; set; }

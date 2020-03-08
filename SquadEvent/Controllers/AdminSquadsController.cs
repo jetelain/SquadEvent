@@ -11,11 +11,11 @@ using SquadEvent.SquadGameInfos;
 
 namespace SquadEvent.Controllers
 {
-    public class RoundSquadsController : Controller
+    public class AdminSquadsController : Controller
     {
         private readonly SquadEventContext _context;
 
-        public RoundSquadsController(SquadEventContext context)
+        public AdminSquadsController(SquadEventContext context)
         {
             _context = context;
         }
@@ -39,6 +39,8 @@ namespace SquadEvent.Controllers
                 return NotFound();
             }
 
+            EnsurePolicy(roundSquad);
+
             return View(roundSquad);
         }
 
@@ -55,18 +57,28 @@ namespace SquadEvent.Controllers
             vm.Squad.Slots[0].AssignedKit = Kit.SquadLeader;
             vm.Squad.Slots[0].Role = FireTeamRole.TeamLeader;
 
-            await CreateFillVM(vm);
+            await PrepareViewModel(vm);
 
             return View(vm);
         }
 
-        private async Task CreateFillVM(RoundSquadFormViewModel vm)
+        private static void EnsurePolicy(RoundSquad roundSquad)
+        {
+            if (roundSquad.Side.MatchSide.SquadsPolicy == SquadsPolicy.SquadsAndSlotsRestricted)
+            {
+                roundSquad.RestrictTeamComposition = true;
+            }
+        }
+
+        private async Task PrepareViewModel(RoundSquadFormViewModel vm)
         {
             vm.Squad.Side = await _context.RoundSides
                 .Include(r => r.Round).ThenInclude(r => r.Match)
                 .Include(r => r.Round).ThenInclude(r => r.GameMap)
                 .Include(r => r.MatchSide).ThenInclude(r => r.Match)
                 .FirstOrDefaultAsync(r => r.RoundSideID == vm.Squad.RoundSideID);
+
+            EnsurePolicy(vm.Squad);
         }
 
         // POST: RoundSquads/Create
@@ -76,7 +88,7 @@ namespace SquadEvent.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(RoundSquadFormViewModel vm)
         {
-            await CreateFillVM(vm);
+            await PrepareViewModel(vm);
 
             if (ModelState.IsValid)
             {
@@ -146,6 +158,7 @@ namespace SquadEvent.Controllers
                 Squad = roundSquad
             };
             vm.Squad.Slots = vm.Squad.Slots.Concat(Enumerable.Range(vm.Squad.Slots.Count, 9 - vm.Squad.Slots.Count).Select(num => new RoundSlot() { SlotNumber = num })).ToList();
+            EnsurePolicy(vm.Squad);
             return View(vm);
         }
 
@@ -161,7 +174,7 @@ namespace SquadEvent.Controllers
                 return NotFound();
             }
 
-            await CreateFillVM(vm);
+            await PrepareViewModel(vm);
 
             if (ModelState.IsValid)
             {
@@ -220,7 +233,7 @@ namespace SquadEvent.Controllers
 
         private IActionResult RedirectToRound(RoundSquad rs)
         {
-            return RedirectToAction(nameof(MatchesController.Details), "Matches", new { id = rs.Side.Round.MatchID }, "round-" + rs.Side.RoundID);
+            return RedirectToAction(nameof(AdminMatchsController.Details), ControllersName.AdminMatchs, new { id = rs.Side.Round.MatchID }, "round-" + rs.Side.RoundID);
         }
 
         // GET: RoundSquads/Delete/5
@@ -232,7 +245,9 @@ namespace SquadEvent.Controllers
             }
 
             var roundSquad = await _context.RoundSquads
-                .Include(r => r.Side)
+                .Include(r => r.Side).ThenInclude(r => r.MatchSide).ThenInclude(r => r.Match)
+                .Include(r => r.Side).ThenInclude(r => r.Round).ThenInclude(r => r.Match)
+                .Include(r => r.Side).ThenInclude(r => r.Round).ThenInclude(r => r.GameMap)
                 .FirstOrDefaultAsync(m => m.RoundSquadID == id);
             if (roundSquad == null)
             {
