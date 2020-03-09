@@ -97,26 +97,33 @@ namespace SquadEvent.Controllers
             {
                 try
                 {
-                    _context.Update(vm.MatchUser);
-
-                    var slotIds = vm.SlotPerRound.Where(s => s.RoundSlotID != null).Select(s => s.RoundSlotID).ToList();
-
-                    var previousSlots = await _context.RoundSlots.Where(s => !slotIds.Contains(s.RoundSlotID) && s.MatchUserID == vm.MatchUser.MatchUserID && s.Squad.Side.MatchSide.MatchSideID == vm.MatchUser.MatchSideID).ToListAsync();
-                    foreach (var slot in previousSlots)
+                    using (var transac = await _context.Database.BeginTransactionAsync())
                     {
-                        slot.MatchUserID = null;
-                        _context.Update(slot);
+                        _context.Update(vm.MatchUser);
+
+                        var slotIds = vm.SlotPerRound.Where(s => s.RoundSlotID != null).Select(s => s.RoundSlotID).ToList();
+
+                        var previousSlots = await _context.RoundSlots.Where(s => !slotIds.Contains(s.RoundSlotID) && s.MatchUserID == vm.MatchUser.MatchUserID && s.Squad.Side.MatchSide.MatchSideID == vm.MatchUser.MatchSideID).ToListAsync();
+                        foreach (var slot in previousSlots)
+                        {
+                            slot.MatchUserID = null;
+                            slot.SetTimestamp();
+                            _context.Update(slot);
+                        }
+
+                        var newSlots = await _context.RoundSlots.Where(s => slotIds.Contains(s.RoundSlotID) && s.Squad.Side.MatchSide.MatchSideID == vm.MatchUser.MatchSideID).ToListAsync();
+                        foreach (var slot in newSlots)
+                        {
+                            slot.MatchUserID = vm.MatchUser.MatchUserID;
+                            slot.SetTimestamp();
+                            _context.Update(slot);
+                        }
+
+
+                        await _context.SaveChangesAsync();
+
+                        await transac.CommitAsync();
                     }
-
-                    var newSlots = await _context.RoundSlots.Where(s => slotIds.Contains(s.RoundSlotID) && s.Squad.Side.MatchSide.MatchSideID == vm.MatchUser.MatchSideID).ToListAsync();
-                    foreach(var slot in newSlots)
-                    {
-                        slot.MatchUserID = vm.MatchUser.MatchUserID;
-                        _context.Update(slot);
-                    }
-
-
-                    await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {

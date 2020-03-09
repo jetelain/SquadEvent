@@ -27,6 +27,17 @@ namespace SquadEvent.Entities
         public DbSet<RoundSquad> RoundSquads { get; set; }
         public DbSet<RoundSlot> RoundSlots { get; set; }
 
+        internal async Task ClearOtherUserRoundSlots(int matchUserID, int roundID, List<int> ignoredRoundSlotID)
+        {
+            var slotsToClear = await RoundSlots.Where(s => !ignoredRoundSlotID.Contains(s.RoundSlotID) && s.MatchUserID == matchUserID && s.Squad.Side.RoundID == roundID).ToListAsync();
+            foreach (var slot in slotsToClear)
+            {
+                slot.MatchUserID = null;
+                slot.SetTimestamp();
+                Update(slot);
+            }
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>().ToTable("User");

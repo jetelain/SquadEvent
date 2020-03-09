@@ -38,39 +38,46 @@
 
 @for (int i = 0; i < Model.Squad.Slots.Count; ++i)
 {
-    <div class="form-row">
-        <input type="hidden" asp-for="Squad.Slots[i].RoundSlotID" />
-        <input type="hidden" asp-for="Squad.Slots[i].SlotNumber" />
-        <input type="hidden" asp-for="Squad.Slots[i].MatchUserID" />
-        <div class="form-group col-md-2">
-            @if (i == 0)
-            {
-                <label asp-for="Squad.Slots[i].Role"></label>
-                <input type="hidden" asp-for="Squad.Slots[i].Role" />
-                <select asp-for="Squad.Slots[i].Role" asp-items="Html.GetEnumSelectList<SquadEvent.SquadGameInfos.FireTeamRole>()" class="form-control" disabled></select>
-            }
-            else
-            {
-                <label asp-for="Squad.Slots[i].Role" class="control-label sr-only"></label>
-                <select asp-for="Squad.Slots[i].Role" asp-items="Html.GetEnumSelectList<SquadEvent.SquadGameInfos.FireTeamRole>()" class="form-control role">
-                    <option value="">(Fermé)</option>
-                </select>
-                <span asp-validation-for="Squad.Slots[i].Role" class="text-danger"></span>
-            }
-        </div>
-        <div class="form-group col-md-2">
-            <label asp-for="Squad.Slots[i].AssignedKit" class="control-label @(i>0?"sr-only":"")"></label>
-            <select asp-for="Squad.Slots[i].AssignedKit" asp-items="Html.GetEnumSelectList<SquadEvent.SquadGameInfos.Kit>()" class="form-control kit">
-                <option value="">(Non précisé)</option>
+<div class="form-row">
+    <input type="hidden" asp-for="Squad.Slots[i].RoundSlotID" />
+    <input type="hidden" asp-for="Squad.Slots[i].SlotNumber" />
+    <input type="hidden" asp-for="Squad.Slots[i].Timestamp" />
+    <div class="form-group col-md-2">
+        @if (i == 0)
+        {
+            <label asp-for="Squad.Slots[i].Role"></label>
+            <input type="hidden" asp-for="Squad.Slots[i].Role" />
+            <select asp-for="Squad.Slots[i].Role" asp-items="Html.GetEnumSelectList<SquadEvent.SquadGameInfos.FireTeamRole>()" class="form-control" disabled></select>
+        }
+        else
+        {
+            <label asp-for="Squad.Slots[i].Role" class="control-label sr-only"></label>
+            <select asp-for="Squad.Slots[i].Role" asp-items="Html.GetEnumSelectList<SquadEvent.SquadGameInfos.FireTeamRole>()" class="form-control role">
+                <option value="">(Fermé)</option>
             </select>
-            <span asp-validation-for="Squad.Slots[i].AssignedKit" class="text-danger"></span>
-        </div>
-        <div class="form-group col-md-4">
-            <label asp-for="Squad.Slots[i].Label" class="control-label @(i>0?"sr-only":"")"></label>
-            <input asp-for="Squad.Slots[i].Label" class="form-control" />
-            <span asp-validation-for="Squad.Slots[i].Label" class="text-danger"></span>
-        </div>
+            <span asp-validation-for="Squad.Slots[i].Role" class="text-danger"></span>
+        }
     </div>
+    <div class="form-group col-md-2">
+        <label asp-for="Squad.Slots[i].AssignedKit" class="control-label @(i>0?"sr-only":"")"></label>
+        <select asp-for="Squad.Slots[i].AssignedKit" asp-items="Html.GetEnumSelectList<SquadEvent.SquadGameInfos.Kit>()" class="form-control kit">
+            <option value="">(Non précisé)</option>
+        </select>
+        <span asp-validation-for="Squad.Slots[i].AssignedKit" class="text-danger"></span>
+    </div>
+    <div class="form-group col-md-3">
+        <label asp-for="Squad.Slots[i].Label" class="control-label @(i>0?"sr-only":"")"></label>
+        <input asp-for="Squad.Slots[i].Label" class="form-control" />
+        <span asp-validation-for="Squad.Slots[i].Label" class="text-danger"></span>
+    </div>
+    <div class="form-group col-md-3">
+        <label asp-for="Squad.Slots[i].MatchUserID" class="control-label @(i>0?"sr-only":"")"></label>
+        <select asp-for="Squad.Slots[i].MatchUserID" asp-items="@Model.MatchUserDropdownList" class="form-control kit">
+            <option value="">(Libre)</option>
+        </select>
+        <span asp-validation-for="Squad.Slots[i].MatchUserID" class="text-danger"></span>
+    </div>
+</div>
 }
 
 

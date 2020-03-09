@@ -49,7 +49,7 @@
                 <th>Carte</th>
                 <th colspan="2">Armée</th>
                 <th colspan="2">Squad</th>
-                <th colspan="2">Rôle</th>
+                <th>Rôle</th>
                 <th colspan="2">Kit</th>
                 <th>Libellé</th>
             </tr>
@@ -63,8 +63,7 @@
                 <td>@Html.DisplayFor(m => slot.Squad.Side.Faction)</td>
                 <td><a  asp-controller="@ControllersName.AdminSquads" asp-action="Details" asp-route-id="@slot.RoundSquadID" class="badge badge-dark">@slot.Squad.Number</a></td>
                 <td><a asp-controller="@ControllersName.AdminSquads" asp-action="Details" asp-route-id="@slot.RoundSquadID">@slot.Squad.Name</a></td>
-                <td><img src="@ViewHelper.Icon(slot.Role)" width="11" /></td>
-                <td>@Html.DisplayFor(m => slot.Role)</td>
+                <td><span class="badge badge-secondary">@Html.DisplayFor(m => slot.Role)</span></td>
                 <td><img src="@ViewHelper.Icon(slot.AssignedKit)" width="32" /></td>
                 <td>@Html.DisplayFor(m => slot.AssignedKit)</td>
                 <td>@slot.Label</td>

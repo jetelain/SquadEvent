@@ -1,5 +1,7 @@
 ﻿using SquadEvent.SquadGameInfos;
+using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SquadEvent.Entities
 {
@@ -25,5 +27,12 @@ namespace SquadEvent.Entities
 
         [Display(Name = "Kit")]
         public Kit? AssignedKit { get; set; }
+
+        public long? Timestamp { get; set; }
+
+        public void SetTimestamp()
+        {
+            Timestamp = DateTime.UtcNow.Ticks;
+        }
     }
 }

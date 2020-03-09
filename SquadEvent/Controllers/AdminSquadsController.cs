@@ -58,7 +58,7 @@ namespace SquadEvent.Controllers
             vm.Squad.Slots[0].Role = FireTeamRole.TeamLeader;
 
             await PrepareViewModel(vm);
-
+            await PrepareDrowndownList(vm);
             return View(vm);
         }
 
@@ -97,25 +97,28 @@ namespace SquadEvent.Controllers
                     var slot = vm.Squad.Slots[i];
                     slot.Squad = vm.Squad;
                 }
-
-                await ComputeSquadNumber(vm.Squad);
-
-                vm.Squad.Slots = vm.Squad.Slots.Where(s => s.Role != null).ToList();
-                vm.Squad.SlotsCount = vm.Squad.Slots.Count();
-
-                _context.Add(vm.Squad);
-
-                var slotNumber = 1;
-                foreach (var slot in vm.Squad.Slots)
+                using (var transac = await _context.Database.BeginTransactionAsync())
                 {
-                    slot.SlotNumber = slotNumber;
-                    _context.Add(slot);
-                    slotNumber++;
-                }
+                    await ComputeSquadNumber(vm.Squad);
 
-                await _context.SaveChangesAsync();
+                    vm.Squad.Slots = vm.Squad.Slots.Where(s => s.Role != null).ToList();
+                    vm.Squad.SlotsCount = vm.Squad.Slots.Count();
+
+                    await NormalizeSlots(vm);
+
+                    _context.Add(vm.Squad);
+
+                    foreach (var slot in vm.Squad.Slots)
+                    {
+                        _context.Add(slot);
+                    }
+
+                    await _context.SaveChangesAsync();
+                    await transac.CommitAsync();
+                }
                 return RedirectToRound(vm.Squad);
             }
+            await PrepareDrowndownList(vm);
             return View(vm);
         }
 
@@ -159,7 +162,25 @@ namespace SquadEvent.Controllers
             };
             vm.Squad.Slots = vm.Squad.Slots.Concat(Enumerable.Range(vm.Squad.Slots.Count, 9 - vm.Squad.Slots.Count).Select(num => new RoundSlot() { SlotNumber = num })).ToList();
             EnsurePolicy(vm.Squad);
+
+            await PrepareDrowndownList(vm);
+
             return View(vm);
+        }
+
+        private async Task PrepareDrowndownList(RoundSquadFormViewModel vm)
+        {
+            var sideUsers = await _context.MatchUsers
+                .Include(u => u.User)
+                .Include(u => u.Slots).ThenInclude(s => s.Squad)
+                .Where(u => u.MatchSideID == vm.Squad.Side.MatchSideID)
+                .OrderBy(u => u.User.Name)
+                .ToListAsync();
+
+            vm.MatchUserDropdownList = sideUsers
+                .Where(u => !u.Slots.Any(s => s.Squad != null && s.Squad.RoundSideID == vm.Squad.RoundSideID && s.RoundSquadID != vm.Squad.RoundSquadID))
+                .Select(u => new SelectListItem(u.User.Name, u.MatchUserID.ToString()))
+                .ToList();
         }
 
         // POST: RoundSquads/Edit/5
@@ -174,46 +195,51 @@ namespace SquadEvent.Controllers
                 return NotFound();
             }
 
-            await PrepareViewModel(vm);
-
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var removed = vm.Squad.Slots.Where(s => s.Role == null && s.RoundSlotID != 0).ToList();
-
-                    vm.Squad.Slots = vm.Squad.Slots.Where(s => s.Role != null).ToList();
-                    vm.Squad.SlotsCount = vm.Squad.Slots.Count();
-
-                    _context.Update(vm.Squad);
-
-                    var slotNumber = 1;
-                    foreach (var slot in vm.Squad.Slots)
+                    using (var transac = await _context.Database.BeginTransactionAsync())
                     {
+                        await PrepareViewModel(vm);
 
-                        slot.SlotNumber = slotNumber;
-                        if (slot.RoundSlotID == 0)
+                        var removed = vm.Squad.Slots.Where(s => s.Role == null && s.RoundSlotID != 0).ToList();
+
+                        // Il y a un risque de concurrence d'accès, on s'assure que si un utilisateur s'est affecté entre temps que ce n'est pas perdu
+                        if (await DetectConcurrentUpdates(vm))
                         {
-                            _context.Add(slot);
+                            await PrepareDrowndownList(vm);
+                            return View(vm);
                         }
-                        else
+
+                        vm.Squad.Slots = vm.Squad.Slots.Where(s => s.Role != null).ToList();
+                        vm.Squad.SlotsCount = vm.Squad.Slots.Count();
+                        _context.Update(vm.Squad);
+
+                        // Numérote les slots, et s'assure que les utilisateurs n'ont pas de doublons
+                        await NormalizeSlots(vm);
+
+                        foreach (var slot in vm.Squad.Slots)
                         {
-                            // Il y a un risque de concurrence d'accès, on s'assure que si un utilisateur s'est affecté entre temps que ce n'est pas perdu
-                            var existing = await _context.RoundSlots.AsNoTracking().FirstOrDefaultAsync(s => s.RoundSlotID == slot.RoundSlotID);
-                            slot.AssignedUser = existing.AssignedUser;
-                            slot.MatchUserID = existing.MatchUserID;
-
-                            _context.Update(slot);
+                            slot.SetTimestamp();
+                            if (slot.RoundSlotID == 0)
+                            {
+                                _context.Add(slot);
+                            }
+                            else
+                            {
+                                _context.Update(slot);
+                            }
                         }
-                        slotNumber++;
-                    }
 
-                    foreach (var slot in removed)
-                    {
-                        _context.Remove(slot);
-                    }
+                        foreach (var slot in removed)
+                        {
+                            _context.Remove(slot);
+                        }
 
-                    await _context.SaveChangesAsync();
+                        await _context.SaveChangesAsync();
+                        await transac.CommitAsync();
+                    }
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -228,7 +254,41 @@ namespace SquadEvent.Controllers
                 }
                 return RedirectToRound(vm.Squad);
             }
+            await PrepareViewModel(vm);
+            await PrepareDrowndownList(vm);
             return View(vm);
+        }
+
+        private async Task NormalizeSlots(RoundSquadFormViewModel vm)
+        {
+            var slotNumber = 1;
+            foreach (var slot in vm.Squad.Slots)
+            {
+                if (slot.MatchUserID != null)
+                {
+                    await _context.ClearOtherUserRoundSlots(slot.MatchUserID.Value, vm.Squad.Side.RoundID, new List<int>() { slot.RoundSlotID });
+                }
+                slot.SlotNumber = slotNumber;
+                slotNumber++;
+            }
+        }
+
+        private async Task<bool> DetectConcurrentUpdates(RoundSquadFormViewModel vm)
+        {
+            ModelState.Clear();
+            var concurrent = 0;
+            foreach (var slot in vm.Squad.Slots.Where(s => s.Role != null && s.RoundSlotID != 0))
+            {
+                var existing = await _context.RoundSlots.AsNoTracking().FirstOrDefaultAsync(s => s.RoundSlotID == slot.RoundSlotID);
+                if (slot.Timestamp < existing.Timestamp && existing.MatchUserID != slot.MatchUserID)
+                {
+                    var key = $"Squad.Slots[{slot.SlotNumber - 1}].MatchUserID";
+                    slot.MatchUserID = existing.MatchUserID;
+                    ModelState.AddModelError(key, "La valeur a été modifiée entre temps par un autre utilisateur.");
+                    concurrent++;
+                }
+            }
+            return concurrent != 0;
         }
 
         private IActionResult RedirectToRound(RoundSquad rs)

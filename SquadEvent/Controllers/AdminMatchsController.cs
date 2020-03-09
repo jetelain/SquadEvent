@@ -78,7 +78,7 @@ namespace SquadEvent.Controllers
 
             await DuplicateSquadsAndSlots(previousRoundSide, roundSide);
 
-            return RedirectToAction(nameof(Details), ControllersName.AdminMatchs, new { id = round.MatchID }, "round-" + previousRound.RoundID);
+            return RedirectToAction(nameof(Details), ControllersName.AdminMatchs, new { id = round.MatchID }, "round-" + round.RoundID);
         }
 
         private async Task DuplicateSquadsAndSlots(RoundSide source, RoundSide target)
@@ -110,7 +110,8 @@ namespace SquadEvent.Controllers
                 MatchUserID = p.MatchUserID,
                 Role = p.Role,
                 SlotNumber = p.SlotNumber,
-                Squad = copy
+                Squad = copy,
+                Timestamp = p.Timestamp
             }).ToList();
             return copy;
         }
@@ -313,11 +314,18 @@ namespace SquadEvent.Controllers
                     }
                 }
             }
+
             foreach (var s in match.Sides)
             {
-                s.Users = s.Users.OrderBy(s => s.User.Name).ToList();
+                if (s.Users != null)
+                {
+                    s.Users = s.Users.OrderBy(s => s.User.Name).ToList();
+                }
             }
-            match.Users = match.Users.OrderBy(s => s.User.Name).ToList();
+            if (match.Users != null)
+            {
+                match.Users = match.Users.OrderBy(s => s.User.Name).ToList();
+            }
         }
 
         // POST: Matches/Edit/5

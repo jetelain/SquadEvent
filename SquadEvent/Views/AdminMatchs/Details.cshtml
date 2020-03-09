@@ -156,9 +156,9 @@
                                 else
                                 {
                                     <td>
-                                        <span class="badge badge-dark">@slot.Squad.Number - @Html.DisplayFor(m => slot.Role)</span>
-                                        <img src="@ViewHelper.Icon(slot.Role)" width="11" height="13" alt="@slot.Role" title="@Html.DisplayFor(m => slot.Role)" />
-                                        <img src="@ViewHelper.Icon(slot.AssignedKit)" height="13" alt="@slot.AssignedKit"title="@Html.DisplayFor(m => slot.AssignedKit)" />
+                                        <span class="badge badge-dark">@slot.Squad.Number</span>
+                                        <span class="badge badge-secondary">@Html.DisplayFor(m => slot.Role)</span>
+                                        <img src="@ViewHelper.Icon(slot.AssignedKit)" height="20" alt="@slot.AssignedKit"title="@Html.DisplayFor(m => slot.AssignedKit)" />
                                     </td>
                                 }
                             }
