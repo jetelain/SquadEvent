@@ -99,12 +99,18 @@ namespace SquadEvent.Controllers
                 }
                 using (var transac = await _context.Database.BeginTransactionAsync())
                 {
+                    if (await CheckUserAvailibilty(vm))
+                    {
+                        await PrepareDrowndownList(vm);
+                        return View(vm);
+                    }
+
                     await ComputeSquadNumber(vm.Squad);
 
                     vm.Squad.Slots = vm.Squad.Slots.Where(s => s.Role != null).ToList();
                     vm.Squad.SlotsCount = vm.Squad.Slots.Count();
 
-                    await NormalizeSlots(vm);
+                    NormalizeSlotsNumber(vm);
 
                     _context.Add(vm.Squad);
 
@@ -206,7 +212,7 @@ namespace SquadEvent.Controllers
                         var removed = vm.Squad.Slots.Where(s => s.Role == null && s.RoundSlotID != 0).ToList();
 
                         // Il y a un risque de concurrence d'accès, on s'assure que si un utilisateur s'est affecté entre temps que ce n'est pas perdu
-                        if (await DetectConcurrentUpdates(vm))
+                        if (await DetectConcurrentUpdates(vm) || await CheckUserAvailibilty(vm))
                         {
                             await PrepareDrowndownList(vm);
                             return View(vm);
@@ -217,7 +223,7 @@ namespace SquadEvent.Controllers
                         _context.Update(vm.Squad);
 
                         // Numérote les slots, et s'assure que les utilisateurs n'ont pas de doublons
-                        await NormalizeSlots(vm);
+                        NormalizeSlotsNumber(vm);
 
                         foreach (var slot in vm.Squad.Slots)
                         {
@@ -259,18 +265,35 @@ namespace SquadEvent.Controllers
             return View(vm);
         }
 
-        private async Task NormalizeSlots(RoundSquadFormViewModel vm)
+        private void NormalizeSlotsNumber(RoundSquadFormViewModel vm)
         {
             var slotNumber = 1;
             foreach (var slot in vm.Squad.Slots)
             {
-                if (slot.MatchUserID != null)
-                {
-                    await _context.ClearOtherUserRoundSlots(slot.MatchUserID.Value, vm.Squad.Side.RoundID, new List<int>() { slot.RoundSlotID });
-                }
                 slot.SlotNumber = slotNumber;
                 slotNumber++;
             }
+        }
+
+        private async Task<bool> CheckUserAvailibilty(RoundSquadFormViewModel vm)
+        {
+            ModelState.Clear();
+            var badusers = 0;
+            var slotsIds = vm.Squad.Slots.Where(s => s.RoundSlotID != 0).Select(s => s.RoundSlotID).ToList();
+
+            foreach (var slot in vm.Squad.Slots.Where(s => s.Role != null && s.MatchUserID != null))
+            {
+                var conflicts = await _context.RoundSlots.Where(s => !slotsIds.Contains(s.RoundSlotID) 
+                    && s.MatchUserID == slot.MatchUserID 
+                    && s.Squad.Side.RoundID == vm.Squad.Side.RoundID).CountAsync();
+                if (conflicts != 0)
+                {
+                    var key = $"Squad.Slots[{slot.SlotNumber - 1}].MatchUserID";
+                    ModelState.AddModelError(key, "Le participant n'est plus disponible.");
+                    badusers++;
+                }
+            }
+            return badusers != 0;
         }
 
         private async Task<bool> DetectConcurrentUpdates(RoundSquadFormViewModel vm)
