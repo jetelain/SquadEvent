@@ -71,7 +71,6 @@
 
     <table class="table">
         <colgroup>
-            <col width="15" />
             <col width="100" />
             <col width="40" />
             <col width="200" />
@@ -88,7 +87,7 @@
             @foreach (var slot in Model.Slots)
             {
             <tr>
-                <td><span class="badge badge-secondary">@Html.DisplayFor(m => slot.Role)</span></td>
+                <td><span class="badge badge-secondary @slot.Role">@Html.DisplayFor(m => slot.Role)</span></td>
                 <td><img src="@ViewHelper.Icon(slot.AssignedKit)" height="32" /></td>
                 <td>
                     @Html.DisplayFor(m => slot.AssignedKit)

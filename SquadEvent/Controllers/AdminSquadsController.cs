@@ -55,7 +55,7 @@ namespace SquadEvent.Controllers
             };
 
             vm.Squad.Slots[0].AssignedKit = Kit.SquadLeader;
-            vm.Squad.Slots[0].Role = FireTeamRole.TeamLeader;
+            vm.Squad.Slots[0].Role = FireTeamRole.SquadLeader;
 
             await PrepareViewModel(vm);
             await PrepareDrowndownList(vm);

@@ -25,7 +25,7 @@ namespace SquadEvent.Entities
         [NotMapped]
         public MatchUser Leader 
         { 
-            get { return Slots?.FirstOrDefault(s => s.Role == FireTeamRole.TeamLeader)?.AssignedUser; } 
+            get { return Slots?.FirstOrDefault(s => s.Role == FireTeamRole.SquadLeader)?.AssignedUser; } 
         }
 
         [Display(Name = "Permettre uniquement les emplacements prédéfinits")]

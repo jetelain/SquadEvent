@@ -157,7 +157,7 @@
                                 {
                                     <td>
                                         <span class="badge badge-dark">@slot.Squad.Number</span>
-                                        <span class="badge badge-secondary">@Html.DisplayFor(m => slot.Role)</span>
+                                        <span class="badge badge-secondary @slot.Role">@Html.DisplayFor(m => slot.Role)</span>
                                         <img src="@ViewHelper.Icon(slot.AssignedKit)" height="20" alt="@slot.AssignedKit"title="@Html.DisplayFor(m => slot.AssignedKit)" />
                                     </td>
                                 }

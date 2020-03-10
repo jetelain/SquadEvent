@@ -9,7 +9,7 @@ namespace SquadEvent.SquadGameInfos
     public enum FireTeamRole
     {
         [Display(Name = "SL")]
-        TeamLeader,
+        SquadLeader,
         [Display(Name = "A")]
         Alpha,
         [Display(Name = "B - FTL")]

@@ -157,3 +157,14 @@ main.home {
 }
 
 h1{font-weight: bold;}
+/*
+.SquadLeader, .Alpha {
+    background-color: #3FFF00;
+}
+*/
+.BravoLeader, .Bravo {
+    background-color: #C376DB;
+}
+.CharlieLeader, .Charlie {
+    background-color: #5BE9B6;
+}

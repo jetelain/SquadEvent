@@ -72,7 +72,7 @@
     </div>
     <div class="form-group col-md-3">
         <label asp-for="Squad.Slots[i].MatchUserID" class="control-label @(i>0?"sr-only":"")"></label>
-        <select asp-for="Squad.Slots[i].MatchUserID" asp-items="@Model.MatchUserDropdownList" class="form-control kit">
+        <select asp-for="Squad.Slots[i].MatchUserID" asp-items="@Model.MatchUserDropdownList" class="form-control userid">
             <option value="">(Libre)</option>
         </select>
         <span asp-validation-for="Squad.Slots[i].MatchUserID" class="text-danger"></span>
