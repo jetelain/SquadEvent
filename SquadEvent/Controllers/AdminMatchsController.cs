@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ using SquadEvent.SquadGameInfos;
 
 namespace SquadEvent.Controllers
 {
+    [Authorize(Policy = "Admin")]
     public class AdminMatchsController : Controller
     {
         private readonly SquadEventContext _context;
@@ -299,7 +301,7 @@ namespace SquadEvent.Controllers
             return View(vm);
         }
 
-        private static void SortModel(Match match)
+        internal static void SortModel(Match match)
         {
             match.Sides = match.Sides.OrderBy(s => s.Number).ToList();
             match.Rounds = match.Rounds.OrderBy(s => s.Number).ToList();

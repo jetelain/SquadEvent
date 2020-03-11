@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ using SquadEvent.SquadGameInfos;
 
 namespace SquadEvent.Controllers
 {
+    [Authorize(Policy = "Admin")]
     public class AdminSquadsController : Controller
     {
         private readonly SquadEventContext _context;
@@ -141,7 +143,7 @@ namespace SquadEvent.Controllers
             }
             if (string.IsNullOrEmpty(squad.Name))
             {
-                squad.Name = $"Squad {squad.Number}";
+                squad.Name = squad.GenericName;
             }
         }
 

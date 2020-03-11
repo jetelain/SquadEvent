@@ -21,6 +21,11 @@
             </div>
         </div>
         <div class="form-group">
+            <label asp-for="Match.ShortDescription" class="control-label"></label>
+            <input asp-for="Match.ShortDescription" class="form-control" />
+            <span asp-validation-for="Match.ShortDescription" class="text-danger"></span>
+        </div>
+        <div class="form-group">
             <label asp-for="Match.Description" class="control-label"></label>
             <textarea asp-for="Match.Description" class="form-control"></textarea>
             <span asp-validation-for="Match.Description" class="text-danger"></span>

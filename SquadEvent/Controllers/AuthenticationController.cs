@@ -12,10 +12,18 @@ namespace SquadEvent.Controllers
     public class AuthenticationController : Controller
     {
         [HttpGet]
-        public async Task<IActionResult> SignIn() => View("SignIn", await GetExternalProvidersAsync(HttpContext));
+        public async Task<IActionResult> SignIn(string ReturnUrl)
+        {
+            if (ReturnUrl != null && !ReturnUrl.StartsWith("/"))
+            {
+                return BadRequest();
+            }
+            ViewData["ReturnUrl"] = ReturnUrl ?? "/"; 
+            return View("SignIn", await GetExternalProvidersAsync(HttpContext));
+        }
 
         [HttpPost]
-        public async Task<IActionResult> SignIn([FromForm] string provider, [FromForm] bool isPersistent)
+        public async Task<IActionResult> SignIn([FromForm] string provider, [FromForm] bool isPersistent, [FromForm] string ReturnUrl)
         {
             // Note: the "provider" parameter corresponds to the external
             // authentication provider choosen by the user agent.
@@ -29,10 +37,15 @@ namespace SquadEvent.Controllers
                 return BadRequest();
             }
 
+            if (!ReturnUrl.StartsWith("/"))
+            {
+                return BadRequest();
+            }
+
             // Instruct the middleware corresponding to the requested external identity
             // provider to redirect the user agent to its own authorization endpoint.
             // Note: the authenticationScheme parameter must match the value configured in Startup.cs
-            return Challenge(new AuthenticationProperties { RedirectUri = "/", IsPersistent = isPersistent }, provider);
+            return Challenge(new AuthenticationProperties { RedirectUri = ReturnUrl, IsPersistent = isPersistent }, provider);
         }
 
         [HttpGet, HttpPost]

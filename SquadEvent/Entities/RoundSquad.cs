@@ -37,6 +37,9 @@ namespace SquadEvent.Entities
         public List<RoundSlot> Slots { get; set; }
 
         public int SlotsCount { get; set; }
+
+        [NotMapped]
+        public string GenericName { get { return $"Squad {Number}"; } }
     }
 
 

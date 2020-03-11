@@ -124,7 +124,7 @@
         {
             <div class="col-md-6">
                 <h4 class="text-center">@side.Name (@side.Users.Count())</h4>
-                <p><a class="btn btn-sm btn-outline-primary" href="#">Lien d'invitation</a></p>
+                <p><a class="btn btn-sm btn-outline-primary" asp-controller="@ControllersName.Events" asp-action="Subscription" asp-route-id="@Model.MatchID" asp-route-matchSideID="@side.MatchSideID">Lien d'invitation</a></p>
                 <table class="table">
                     <thead>
                         <tr>
@@ -156,9 +156,9 @@
                                 else
                                 {
                                     <td>
-                                        <span class="badge badge-dark">@slot.Squad.Number</span>
+                                        <a asp-controller="@ControllersName.AdminSquads" asp-action="Details" asp-route-id="@slot.Squad.RoundSquadID" title="@slot.Squad.Name" class="badge badge-dark">@slot.Squad.Number</a>
                                         <span class="badge badge-secondary @slot.Role">@Html.DisplayFor(m => slot.Role)</span>
-                                        <img src="@ViewHelper.Icon(slot.AssignedKit)" height="20" alt="@slot.AssignedKit"title="@Html.DisplayFor(m => slot.AssignedKit)" />
+                                        <img src="@ViewHelper.Icon(slot.AssignedKit)" height="20" alt="@slot.AssignedKit" title="@Html.DisplayFor(m => slot.AssignedKit)" />
                                     </td>
                                 }
                             }
@@ -177,8 +177,7 @@
 
     <h4 class="text-center"><a name="unassigned"></a>Non affiliés (@Model.Users.Count(u => u.MatchSideID == null))</h4>
     <p>
-        
-        <a class="btn btn-sm btn-outline-primary" href="#">Lien d'invitation</a>
+        <a class="btn btn-sm btn-outline-primary" asp-controller="@ControllersName.Events" asp-action="Subscription" asp-route-id="@Model.MatchID">Lien d'invitation</a>
         <a class="btn btn-sm btn-outline-primary" asp-action="AddRamdomUsers" asp-route-id="@Model.MatchID">[TEST] Ajouter des utilisateurs au hasard</a>
     </p>
     <table class="table">

@@ -8,19 +8,30 @@
 
 @section Title { <h1><span>Se connecter</span></h1> }
 
+@if (ViewBag.ReturnUrl != "/")
+{
+<div class="alert alert-primary" role="alert">
+    <h4 class="alert-heading">Inscription</h4>
+    <p>Pour pouvoir vous inscrire, il est nécessaire de se connecter avec Steam.<br />L'inscription à l'événement se fera dans un écran de confirmation après.</p>
+</div>
+}
+
+<p class="text-muted">Nous ne stockons des données que si vous vous inscrivez à un événement.<br />
+Pour plus d'informations sur les traitements effectués, merci de vous référez aux <a class="text-muted" asp-controller="@ControllersName.Home" asp-action="Privacy">mentions légales</a>.</p>
+
 @foreach (var scheme in Model.OrderBy(p => p.DisplayName))
 {
-<form method="post" asp-action="SignIn">
-    <input type="hidden" name="Provider" value="@scheme.Name" />
-    <input type="hidden" name="ReturnUrl" value="@ViewBag.ReturnUrl" />
-    <div class="form-group">
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="true" id="isPersistent" name="isPersistent">
-            <label class="form-check-label" for="isPersistent">
-                Se rappeler de moi
-            </label>
+    <form method="post" asp-action="SignIn">
+        <input type="hidden" name="Provider" value="@scheme.Name" />
+        <input type="hidden" name="ReturnUrl" value="@ViewBag.ReturnUrl" />
+        <div class="form-group">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="true" id="isPersistent" name="isPersistent">
+                <label class="form-check-label" for="isPersistent">
+                    Se rappeler de moi
+                </label>
+            </div>
         </div>
-    </div>
-    <button class="btn btn-success m-1" type="submit">Se connecter avec @scheme.DisplayName</button>
-</form>
+        <button class="btn btn-success m-1" type="submit">Se connecter avec @scheme.DisplayName</button>
+    </form>
 }

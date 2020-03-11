@@ -31,6 +31,9 @@ namespace SquadEvent.Entities
         [DataType(DataType.MultilineText)]
         public string Description { get; set; }
 
+        [Display(Name = "Description résumée")]
+        public string ShortDescription { get; set; }
+
         public DateTime StartDate
         {
             get { return new DateTime(Date.Year, Date.Month, Date.Day, StartTime.Hour, StartTime.Minute, StartTime.Second); }

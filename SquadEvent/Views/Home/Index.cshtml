@@ -1,6 +1,37 @@
-﻿@{
+﻿@model SquadEvent.Models.HomeViewModel
+
+@{
     ViewData["Title"] = "Home";
 }
 
 @section Title { <h1><span>@ViewData["Title"]</span></h1> }
 
+<h2>Prochains événements</h2>
+
+<div class="row row-cols-1 row-cols-md-3">
+    @foreach (var item in Model.Matchs)
+    {
+        <div class="col mb-4">
+            <div class="card h-100">
+                @*<a asp-controller="Events" asp-action="Details" asp-route-id="@ev.Event.EventID">
+                        <img src="@(ev.Event.Image ?? @ev.Event.EventType.DefaultImage)" class="card-img-top" alt="@ev.Event.EventType.Label" />
+                    </a>*@
+                <div class="card-body">
+                    <h5 class="card-title"><a asp-controller="@ControllersName.Events" asp-action="Details" asp-route-id="@item.MatchID">@Html.DisplayFor(modelItem => item.Name)</a></h5>
+                    <h6 class="card-subtitle mb-2 text-muted"><i class="far fa-clock"></i> @Html.DisplayFor(modelItem => item.Date) @Html.DisplayFor(modelItem => item.StartTime)</h6>
+                    <p class="card-text">@Html.DisplayFor(modelItem => item.ShortDescription)</p>
+
+                    @if (item.Users != null && Model.User != null && item.Users.Any(u => u.UserID == Model.User.UserID))
+                    {
+                        <a class="btn btn-sm btn-primary" asp-controller="@ControllersName.Events" asp-action="Subscription" asp-route-id="@item.MatchID">Inscrit</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-sm btn-outline-primary" asp-controller="@ControllersName.Events" asp-action="Subscription" asp-route-id="@item.MatchID">S'inscrire</a>
+                    }
+                    <a class="btn btn-sm btn-outline-secondary" asp-controller="@ControllersName.Events" asp-action="Details" asp-route-id="@item.MatchID">En savoir plus</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

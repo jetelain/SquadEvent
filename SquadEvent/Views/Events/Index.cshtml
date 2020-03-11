@@ -1,0 +1,40 @@
+﻿@model IEnumerable<SquadEvent.Entities.Match>
+
+@{
+    ViewData["Title"] = "Evénements";
+}
+
+@section Title { <h1><span>@ViewData["Title"]</span></h1> }
+
+<div id="calendar"></div>
+
+@section Styles {
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/core/main.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/daygrid/main.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/bootstrap/main.min.css" />
+}
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/core/main.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/core/locales/fr.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/daygrid/main.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/bootstrap/main.min.js"></script>
+    <script>
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+          plugins: [ 'dayGrid', 'bootstrap' ],
+          themeSystem: 'bootstrap',
+          height: 500,
+          firstDay: 1,
+          locale:'fr',
+          events: @Json.Serialize(Model.Select(e => new {
+                 id = e.MatchID,
+                 title = e.Name,
+                 start = e.StartDate.ToString("yyyy-MM-dd'T'HH:mm:ss"),
+                 end = e.StartDate.AddHours(1.5 * e.Rounds.Count()).ToString("yyyy-MM-dd'T'HH:mm:ss"),
+                 url = "/Events/Details/" + e.MatchID }).ToList())
+        });
+        calendar.render();
+    </script>
+}

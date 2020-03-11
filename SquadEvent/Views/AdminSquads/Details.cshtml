@@ -112,5 +112,5 @@
 
 <p>
     <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.RoundSquadID">Modifier</a>
-    <a class="btn btn-outline-primary" href="#">Lien d'invitation</a>
+    <a class="btn btn-outline-primary" asp-controller="@ControllersName.Events" asp-action="Subscription" asp-route-id="@Model.Side.MatchSide.Match.MatchID" asp-route-roundSquadID="@Model.RoundSquadID">Lien d'invitation</a>
 </p>
