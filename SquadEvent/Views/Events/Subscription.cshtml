@@ -4,12 +4,36 @@
     ViewData["Title"] = Model.Match.Name;
 }
 
+@section NavBar  {
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index">Evénements</a></li>
+            <li class="breadcrumb-item"><a asp-action="Details" asp-route-id="@Model.Match.MatchID">@Model.Match.Name</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.User.Name</li>
+        </ol>
+    </nav>
+}
+
 @section Title { <h1><span>@ViewData["Title"]</span></h1> }
 
 <h2>Inscription à l'événement</h2>
 <hr />
 
-<p><a class="btn btn-sm btn-secondary" asp-action="Details" asp-route-id="@Model.Match.MatchID">Voir les informations de l'événement</a></p>
+@if (Model.MatchUser.Side == null)
+{
+    <p class="alert alert-primary" role="alert">Vous devez choisir un coté.</p>
+}
+else if (Model.MatchUser.Side.Rounds.Any(r => !r.Squads.Any(s => s.Slots.Any(s => s.AssignedUser == Model.MatchUser))))
+{
+    @if (Model.MatchUser.Side.SquadsPolicy == SquadEvent.Entities.SquadsPolicy.Unrestricted)
+    {
+        <p class="alert alert-primary" role="alert">Vous pouvez optionnellement rejoindre une squad. Vous pourrez également décider de cela au dernier moment.</p>
+    }
+    else
+    {
+        <p class="alert alert-primary" role="alert">Vous devez choisir une squad.</p>
+    }
+}
 
 <dl class="row">
     <dt class="col-sm-2">
@@ -55,9 +79,19 @@
                     <div class="col-md-6">
                         <h3 class="text-center">@side.Name</h3>
                         <p class="text-center text-muted">@Html.DisplayFor(model => side.SquadsPolicy)</p>
-                        <p class="text-center">
-                            <button class="btn btn-primary" name="matchSideID" value="@side.MatchSideID">Rejoindre @side.Name</button>
-                        </p>
+                        @if (side.Users.Count() >= side.MaxUsersCount)
+                        {
+                            <p class="text-center">
+                                <button class="btn btn-secondary disabled" disabled>Rejoindre @side.Name</button>
+                            </p>
+                            <p class="text-center text-muted">Nombre maximum d'inscrits atteint</p>
+                        }
+                        else
+                        {
+                            <p class="text-center">
+                                <button class="btn btn-primary" name="matchSideID" value="@side.MatchSideID">Rejoindre @side.Name</button>
+                            </p>
+                        }
                     </div>
                 }
             </div>
@@ -66,6 +100,8 @@
 }
 else
 {
+
+
     foreach (var side in Model.MatchUser.Side.Rounds.Where(r => !r.Squads.Any(s => s.Slots.Any(s => s.AssignedUser == Model.MatchUser))))
     {
         <h3>Choisissez votre squad pour @side.Round.GameMap.Name</h3>

@@ -102,10 +102,24 @@ namespace SquadEvent.Controllers
             matchUser.MatchSideID = await _context.MatchSides.Where(s => s.MatchSideID == matchSideID && s.MatchID == id).Select(s => s.MatchSideID).FirstOrDefaultAsync();
             if (matchUser.MatchSideID != null)
             {
-                _context.Update(matchUser);
-                await _context.SaveChangesAsync();
+                using (var transaction = await _context.Database.BeginTransactionAsync())
+                {
+                    if (await CanJoin(matchUser))
+                    {
+                        _context.Update(matchUser);
+                        await _context.SaveChangesAsync();
+                        await transaction.CommitAsync();
+                    }
+                }
             }
             return RedirectToAction(nameof(Subscription), new { id });
+        }
+
+        private async Task<bool> CanJoin(MatchUser user)
+        {
+            var max = await _context.MatchSides.Where(s => s.MatchSideID == user.MatchSideID).Select(s => s.MaxUsersCount).FirstOrDefaultAsync();
+            var count = await _context.MatchUsers.Where(s => s.MatchSideID == user.MatchSideID && s.MatchUserID != user.MatchUserID).CountAsync();
+            return count < max;
         }
 
         [Authorize(Policy = "SteamID")]
@@ -151,8 +165,12 @@ namespace SquadEvent.Controllers
                         // Vérifie que MatchSideID appartient bien à MatchID
                         vm.MatchSideID = await _context.MatchSides.Where(s => s.MatchSideID == vm.MatchSideID && s.MatchID == id).Select(s => s.MatchSideID).FirstOrDefaultAsync();
                     }
-                    _context.Add(new MatchUser() { MatchID = id, UserID = vm.User.UserID, MatchSideID = vm.MatchSideID });
-                    await _context.SaveChangesAsync();
+                    matchUser = new MatchUser() { MatchID = id, UserID = vm.User.UserID, MatchSideID = vm.MatchSideID };
+                    if (await CanJoin(matchUser))
+                    {
+                        _context.Add(matchUser);
+                        await _context.SaveChangesAsync();
+                    }
                 }
                 await transaction.CommitAsync();
             }

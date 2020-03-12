@@ -17,6 +17,12 @@
 
 @if (Model.MatchUser != null && Model.MatchUser.Side == null)
 {
+    <div class="alert alert-secondary" role="alert">
+        <h4 class="alert-heading">Inscription</h4>
+        <p>Vous êtes inscrit en liste d'attente.</p>
+        <p><a class="btn btn-secondary" asp-controller="@ControllersName.Events" asp-action="Subscription" asp-route-id="@Model.Match.MatchID">Voir l'inscription</a></p>
+    </div>
+
     <form asp-action="SubscriptionSide" asp-route-id="@Model.Match.MatchID">
         <div>
             <div class="row mb-4">
@@ -25,9 +31,20 @@
                     <div class="col-md-6">
                         <h3 class="text-center">@side.Name</h3>
                         <p class="text-center text-muted">@Html.DisplayFor(model => side.SquadsPolicy)</p>
-                        <p class="text-center">
-                            <button class="btn btn-outline-primary" name="matchSideID" value="@side.MatchSideID">Rejoindre @side.Name</button>
-                        </p>
+
+                        @if ((side.Users?.Count() ?? 0) >= side.MaxUsersCount)
+                        {
+                            <p class="text-center">
+                                <button class="btn btn-outline-secondary disabled" disabled>Rejoindre @side.Name</button>
+                            </p>
+                            <p class="text-center text-muted">Nombre maximum d'inscrits atteint</p>
+                        }
+                        else
+                        {
+                            <p class="text-center">
+                                <button class="btn btn-outline-primary" name="matchSideID" value="@side.MatchSideID">Rejoindre @side.Name</button>
+                            </p>
+                        }
                     </div>
                 }
             </div>
@@ -55,16 +72,22 @@ else
                                 <span class="text-muted">Aller dans votre inscription pour changer de coté.</span>
                             }
                         }
-                        else
+                        else if ((side.Users?.Count() ?? 0) >= side.MaxUsersCount)
                         {
-                            <a class="btn btn-outline-primary" asp-controller="@ControllersName.Events" asp-action="Subscription" asp-route-id="@Model.Match.MatchID" asp-route-matchSideID="@side.MatchSideID">S'inscire et rejoindre @side.Name</a>
-                        }
-                    </p>
-                </div>
-            }
+                            <a class="btn btn-outline-secondary" asp-controller="@ControllersName.Events" asp-action="Subscription" asp-route-id="@Model.Match.MatchID">S'inscire et rejoindre @side.Name</a>
+                        <p class="text-center text-muted">Nombre maximum d'inscrits atteint, vous pouvez tout de même vous inscrire en liste d'attente.</p>
+                    }
+                    else
+                    {
+                        <a class="btn btn-outline-primary" asp-controller="@ControllersName.Events" asp-action="Subscription" asp-route-id="@Model.Match.MatchID" asp-route-matchSideID="@side.MatchSideID">S'inscire et rejoindre @side.Name</a>
+                    }
+                        </p>
+                    </div>
+                }
         </div>
     </div>
 }
+
 
 @if (Model.Match.Rounds.Count > 1)
 {
@@ -173,9 +196,9 @@ else
         {
             <div class="col-md-6">
                 <h3 class="text-center">@side.Name</h3>
-                <p>@side.Users.Count() inscrits</p>
+                <p>@(side.Users?.Count() ?? 0) inscrits</p>
                 <ul class="list-group">
-                    @foreach (var user in side.Users)
+                    @foreach (var user in side.Users ?? new List<SquadEvent.Entities.MatchUser>())
                     {
                         <li class="list-group-item">
                             @user.User.Name

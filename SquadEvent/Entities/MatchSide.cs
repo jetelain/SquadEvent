@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,6 +20,9 @@ namespace SquadEvent.Entities
 
         public List<MatchUser> Users { get; set; }
         public int Number { get; set; }
+
+        [Display(Name="Nombre maximum d'inscrits")]
+        public int MaxUsersCount { get; set; }
 
         public SquadsPolicy SquadsPolicy { get; set; }
     }

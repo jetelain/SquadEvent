@@ -56,10 +56,14 @@ a.badge-primary:hover, a.badge-primary:focus {
     background-color: #FFAA00;
 }
 
+.btn-outline-primary.disabled, .btn-outline-primary:disabled {
+    color: #e8ab12;
+}
+
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 @media (min-width: 768px) {
   html {

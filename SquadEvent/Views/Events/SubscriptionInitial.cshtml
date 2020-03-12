@@ -4,6 +4,16 @@
     ViewData["Title"] = Model.Match.Name;
 }
 
+@section NavBar  {
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index">Evénements</a></li>
+            <li class="breadcrumb-item"><a asp-action="Details" asp-route-id="@Model.Match.MatchID">@Model.Match.Name</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Inscription à l'événement</li>
+        </ol>
+    </nav>
+}
+
 @section Title { <h1><span>@ViewData["Title"]</span></h1> }
 
 <h2>Inscription à l'événement</h2>

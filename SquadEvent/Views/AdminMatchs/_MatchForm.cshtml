@@ -64,6 +64,18 @@
                 <span asp-validation-for="Match.Sides[1].SquadsPolicy" class="text-danger"></span>
             </div>
         </div>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label asp-for="Match.Sides[0].MaxUsersCount" class="control-label">Nombre d'inscrits maximum équipe A</label>
+                <input asp-for="Match.Sides[0].MaxUsersCount" class="form-control" />
+                <span asp-validation-for="Match.Sides[0].SquadsPolicy" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-6">
+                <label asp-for="Match.Sides[1].MaxUsersCount" class="control-label">Nombre d'inscrits maximum équipe B</label>
+                <input asp-for="Match.Sides[1].MaxUsersCount" class="form-control" />
+                <span asp-validation-for="Match.Sides[1].MaxUsersCount" class="text-danger"></span>
+            </div>
+        </div>
     </div>
 </div>
 
