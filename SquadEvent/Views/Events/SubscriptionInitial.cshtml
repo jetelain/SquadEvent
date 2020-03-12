@@ -44,15 +44,19 @@
             @if (Model.User.UserID == 0)
             {
                 <div class="form-group">
-                    <label asp-for="User.Name" class="control-label"></label>
-                    <input asp-for="User.Name" class="form-control" />
-                    <span asp-validation-for="User.Name" class="text-danger"></span>
+                    <label asp-for="User.NamePrefix" class="control-label"></label>
+                    <div class="input-group">
+                        <input asp-for="User.NamePrefix" class="form-control" />
+                        <div class="input-group-append">
+                            <span class="input-group-text">@Html.DisplayFor(model => model.User.SteamName)</span>
+                        </div>
+                    </div>
+                    <span asp-validation-for="User.NamePrefix" class="text-danger"></span>
                 </div>
             }
             else
             {
                 <input type="hidden" asp-for="User.UserID" />
-                <input type="hidden" asp-for="User.Name" />
             }
         </div>
     </div>

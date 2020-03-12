@@ -53,7 +53,7 @@ namespace SquadEvent.Controllers
                     Match = match,
                     MatchSideID = matchSideID,
                     RoundSquadID = roundSquadID,
-                    User = new User() { Name = User.Identity.Name }
+                    User = new User() { SteamName = User.Identity.Name }
                 });
             }
             var matchUser = match.Users.FirstOrDefault(u => u.UserID == user.UserID);
@@ -145,6 +145,8 @@ namespace SquadEvent.Controllers
                 if (user == null)
                 {
                     vm.User.SteamId = SteamHelper.GetSteamId(User);
+                    vm.User.SteamName = User.Identity.Name;
+                    vm.User.Name = vm.User.NamePrefix + User.Identity.Name;
                     vm.User.UserID = 0;
                     _context.Add(vm.User);
                     await _context.SaveChangesAsync();
