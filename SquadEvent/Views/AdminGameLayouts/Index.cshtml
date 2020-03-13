@@ -1,0 +1,62 @@
+﻿@model IEnumerable<SquadEvent.Entities.GameLayout>
+
+@{
+    ViewData["Title"] = "Layouts";
+}
+
+@section NavBar  {
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+        </ol>
+    </nav>
+}
+
+@section Title { <h1><span>@ViewData["Title"]</span></h1> }
+
+<p>
+    <a class="btn btn-primary" asp-action="Create">Ajouter un layout</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Left)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Right)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GameMap)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Left)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Right)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GameMap.Name)
+                </td>
+                <td>
+                    <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.GameLayoutID">Détails</a>
+                    <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@item.GameLayoutID">Modifier</a>
+                    <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.GameLayoutID">Supprimer</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

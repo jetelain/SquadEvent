@@ -14,6 +14,8 @@ namespace SquadEvent
         }
 
         public static readonly string Home = Name<Controllers.HomeController>();
+        public static readonly string AdminGameLayouts = Name<Controllers.AdminGameLayoutsController>();
+        public static readonly string AdminGameMaps = Name<Controllers.AdminGameMapsController>();
         public static readonly string AdminMatchs = Name<Controllers.AdminMatchsController>(); 
         public static readonly string AdminSquads = Name<Controllers.AdminSquadsController>();
         public static readonly string Authentication = Name<Controllers.AuthenticationController>();

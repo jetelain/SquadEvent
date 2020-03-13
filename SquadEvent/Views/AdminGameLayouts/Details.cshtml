@@ -1,0 +1,66 @@
+﻿@model SquadEvent.Entities.GameLayout
+
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+@section NavBar  {
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index">Layouts</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+        </ol>
+    </nav>
+}
+
+@section Title { <h1><span>@ViewData["Title"]</span></h1> }
+
+<div>
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Left)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Left)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Right)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Right)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Image)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Image)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Thumbnail)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Thumbnail)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MapFull)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MapFull)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.GameMap)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.GameMap.Name)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@Model.GameLayoutID">Modifier</a>
+</div>

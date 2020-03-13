@@ -1,0 +1,50 @@
+﻿@model IEnumerable<SquadEvent.Entities.GameMap>
+
+@{
+    ViewData["Title"] = "Maps";
+}
+
+@section NavBar  {
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+        </ol>
+    </nav>
+}
+
+@section Title { <h1><span>@ViewData["Title"]</span></h1> }
+
+<p>
+    <a class="btn btn-primary" asp-action="Create">Ajouter une map</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Region)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Region)
+                </td>
+                <td>
+                    <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.GameMapID">Détails</a>
+                    <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@item.GameMapID">Modifier</a>
+                    <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.GameMapID">Supprimer</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

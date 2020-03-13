@@ -129,12 +129,19 @@ div.title {
     margin-top: -1em;
     margin-bottom: 1em;
 }
+
 main div.title {
+    background-image: url(http://qrf-reality.fr/media/1810/back_home.jpg);
     margin-top: 1em;
     margin-bottom: 1em;
     margin-left: -1em;
     margin-right: -1em;
 }
+
+main div.title.players {
+    background-image: url(http://qrf-reality.fr/media/2404/apowmid-2017-044-ex-askari-storm-2916052.jpg);
+}
+
 div.title h1, div.title h2, div.title h3 {
     text-transform: uppercase;
     padding: 2em 1em;
@@ -145,6 +152,7 @@ div.title h1 span, div.title h2 span, div.title h3 span {
     background-color: #000c14;
     color: white;
     box-shadow: 10px 0 0 #000c14,-10px 0 0 #000c14;
+    font-weight: bold;
 }
 
 div.title p {
@@ -156,9 +164,15 @@ div.title p {
 }
 
 div.title p span {
-    background-color: #FFAA00;
+    background-color: #808080;
     color: white;
-    box-shadow: 10px 0 0 #FFAA00,-10px 0 0 #FFAA00;
+    box-shadow: 10px 0 0 #808080,-10px 0 0 #808080;
+}
+
+main div.title p {
+    padding-left: 2.5em;
+    margin-bottom: -4.2em;
+    font-size: 100%;
 }
 
 main.home {

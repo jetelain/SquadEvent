@@ -37,7 +37,7 @@ namespace SquadEvent.Controllers
             var match = await _context.Matchs
                 .Include(m => m.Sides)
                 .Include(m => m.Users).ThenInclude(u => u.User)
-                .Include(m => m.Rounds).ThenInclude(r => r.GameMap)
+                .Include(m => m.Rounds).ThenInclude(r => r.GameMap).ThenInclude(r => r.GameMap)
                 .Include(m => m.Rounds).ThenInclude(r => r.Sides).ThenInclude(s => s.Squads).ThenInclude(s => s.Slots).ThenInclude(s => s.AssignedUser).ThenInclude(u => u.User)
                 .FirstOrDefaultAsync(m => m.MatchID == id);
             if (match == null)
@@ -327,7 +327,7 @@ namespace SquadEvent.Controllers
             var match = await _context.Matchs
                 .Include(m => m.Sides)
                 .Include(m => m.Users).ThenInclude(u => u.User)
-                .Include(m => m.Rounds).ThenInclude(r => r.GameMap)
+                .Include(m => m.Rounds).ThenInclude(r => r.GameMap).ThenInclude(r => r.GameMap)
                 .Include(m => m.Rounds).ThenInclude(r => r.Sides).ThenInclude(s => s.Squads).ThenInclude(s => s.Slots).ThenInclude(s => s.AssignedUser).ThenInclude(u => u.User)
                 .FirstOrDefaultAsync(m => m.MatchID == id);
             if (match == null)

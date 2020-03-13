@@ -1,0 +1,42 @@
+﻿@model SquadEvent.Entities.GameMap
+
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+@section NavBar  {
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index">Maps</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+        </ol>
+    </nav>
+}
+
+@section Title { <h1><span>@ViewData["Title"]</span></h1> }
+
+<div>
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Image)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Image)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Region)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Region)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@Model.GameMapID">Modifier</a>
+</div>

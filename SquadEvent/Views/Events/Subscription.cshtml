@@ -207,16 +207,17 @@ else
         var userslot = squad.Slots.First(s => s.AssignedUser == Model.MatchUser);
         var hasLabels = squad.Slots.Any(s => !string.IsNullOrEmpty(s.Label));
 
-        @*<h3>@side.Round.GameMap.Name</h3>
-            <hr />*@
-        <div class="title" style="background-image: url(@side.Round.GameMap.Image);">
-            <h3><span>Carte 
-                @if (Model.Match.Rounds.Count > 1)
-                {
-                    @:# @side.Round.Number
-                }
-                : @(side.Round.GameMap?.Name ?? "Destination inconnue")
-            </span></h3>
+        <div class="title" style="@ViewHelper.Style(side.Round.GameMap)">
+            <p>
+                <span>
+                    Carte
+                    @if (Model.Match.Rounds.Count > 1)
+                    {
+                        @:# @side.Round.Number
+                    }
+                </span>
+            </p>
+            <h2><span>@(side.Round.GameMap?.Name ?? "Destination inconnue")</span></h2>
         </div>
 
         <h4 class="text-center"><img src="@ViewHelper.Icon(side.Faction)" alt="" width="64" /><br />@Html.DisplayFor(m => @side.Faction)</h4>

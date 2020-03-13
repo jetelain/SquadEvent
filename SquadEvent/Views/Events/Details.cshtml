@@ -6,6 +6,22 @@
 
 @section Title { <h1><span>@ViewData["Title"]</span></h1> }
 
+@if (Model.MatchUser != null)
+{
+    <div class="alert alert-secondary" role="alert">
+        <h4 class="alert-heading">Inscription</h4>
+        @if (Model.MatchUser.Side == null)
+        {
+            <p>Vous êtes inscrit en liste d'attente.</p>
+        }
+        else
+        {
+            <p>Vous êtes bien inscrit.</p>
+        }
+        <p><a class="btn btn-secondary" asp-controller="@ControllersName.Events" asp-action="Subscription" asp-route-id="@Model.Match.MatchID">Voir l'inscription</a></p>
+    </div>
+}
+
 <div>
     @Html.Raw(Model.Match.Description)
 </div>
@@ -19,21 +35,7 @@
     </dd>
 </dl>
 
-@if (Model.MatchUser != null)
-{
-<div class="alert alert-secondary" role="alert">
-    <h4 class="alert-heading">Inscription</h4>
-    @if (Model.MatchUser.Side == null)
-    {
-        <p>Vous êtes inscrit en liste d'attente.</p>
-    }
-    else
-    {
-        <p>Vous êtes bien inscrit.</p>
-    }
-    <p><a class="btn btn-secondary" asp-controller="@ControllersName.Events" asp-action="Subscription" asp-route-id="@Model.Match.MatchID">Voir l'inscription</a></p>
-</div>
-}
+
 @if (Model.MatchUser != null && Model.MatchUser.Side == null)
 {
 
@@ -106,24 +108,30 @@ else
 <div>
     @foreach (var round in Model.Match.Rounds)
     {
-        <div class="title" style="background-image: url(@round.GameMap.Image);">
+        <div class="title" style="@ViewHelper.Style(round.GameMap)">
             <a name="round-@round.RoundID"></a>
-            <h2><span>Carte
-                @if( Model.Match.Rounds.Count > 1)
-                {
-                    @:# @round.Number
-                }
-                : @(round.GameMap?.Name ?? "Destination inconnue")</span></h2>
+            <p>
+                <span>
+                    Carte
+                    @if (Model.Match.Rounds.Count > 1)
+                    {
+                        @:# @round.Number
+                    }
+                </span>
+            </p>
+            <h2>
+                <span>@(round.GameMap?.Name ?? "Destination inconnue")</span>
+            </h2>
         </div>
 
-        <div class="row mb-4">
+        <div class="row">
             @foreach (var side in round.Sides)
             {
                 <div class="col-md-6">
                     <h4 class="text-center"><img src="@ViewHelper.Icon(side.Faction)" alt="" width="64" /><br />@Html.DisplayFor(m => @side.Faction)<br />@side.MatchSide.Name</h4>
                     @if (Model.MatchUser?.Side == side.MatchSide)
                     {
-                        <div class="accordion" id="squads-@side.RoundSideID">
+                        <div class="accordion mb-4" id="squads-@side.RoundSideID">
                             @foreach (var squad in side.Squads)
                             {
                                 var hasLabels = squad.Slots.Any(s => !string.IsNullOrEmpty(s.Label));
@@ -184,7 +192,7 @@ else
                     }
                     else
                     {
-                        <div class="accordion" id="squads-@side.RoundSideID">
+                        <div class="accordion  mb-4" id="squads-@side.RoundSideID">
                             @foreach (var squad in side.Squads)
                             {
                                 <div class="card">
@@ -210,8 +218,10 @@ else
     }
 </div>
 
-<h2>Inscrits</h2>
-<hr />
+<div class="title players">
+    <h2><span>Inscrits</span></h2>
+</div>
+
 <div>
     <div class="row mb-4">
         @foreach (var side in Model.Match.Sides)

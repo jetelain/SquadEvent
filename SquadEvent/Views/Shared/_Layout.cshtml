@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -25,11 +28,22 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="@ControllersName.Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="@ControllersName.Events" asp-action="Index">Evénements</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="@ControllersName.Events" asp-action="Index">Événements</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="@ControllersName.AdminMatchs" asp-action="Index">Administration</a>
-                        </li>
+                        @if ((await AuthorizationService.AuthorizeAsync(User, "Admin")).Succeeded)
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link text-dark dropdown-toggle" asp-area="" asp-controller="@ControllersName.Home" asp-action="Index" id="configDropdownMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Administration
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="configDropdownMenu">
+                                    <a class="dropdown-item" asp-area="" asp-controller="@ControllersName.AdminMatchs" asp-action="Index">Événements</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="@ControllersName.AdminGameLayouts" asp-action="Index">Layouts</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="@ControllersName.AdminGameMaps" asp-action="Index">Maps</a>
+                                </div>
+                            </li>
+                        }
+
                     </ul>
                     <form class="form-inline">
                         @if (User?.Identity?.IsAuthenticated ?? false)
@@ -47,7 +61,7 @@
                 </div>
             </div>
         </nav>
-    </header>    
+    </header>
     <div class="title @ViewData["TitleClass"]" style="@ViewData["TitleStyle"]">
         <div class="container">
             @RenderSection("Title", required: false)
