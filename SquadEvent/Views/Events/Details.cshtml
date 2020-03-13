@@ -91,12 +91,12 @@ else
                         }
                         else if ((side.Users?.Count() ?? 0) >= side.MaxUsersCount)
                         {
-                            <a class="btn btn-outline-secondary" asp-action="Subscription" asp-route-id="@Model.Match.MatchID">S'inscire et rejoindre @side.Name</a>
+                            <a class="btn btn-outline-secondary" asp-action="Subscription" asp-route-id="@Model.Match.MatchID">S'inscrire et rejoindre @side.Name</a>
                         <p class="text-center text-muted">Nombre maximum d'inscrits atteint, vous pouvez tout de même vous inscrire en liste d'attente.</p>
                     }
                     else
                     {
-                        <a class="btn btn-outline-success" asp-action="Subscription" asp-route-id="@Model.Match.MatchID" asp-route-matchSideID="@side.MatchSideID">S'inscire et rejoindre @side.Name</a>
+                        <a class="btn btn-outline-success" asp-action="Subscription" asp-route-id="@Model.Match.MatchID" asp-route-matchSideID="@side.MatchSideID">S'inscrire et rejoindre @side.Name</a>
                     }
                         </p>
                     </div>
