@@ -150,6 +150,7 @@ namespace SquadEvent.Controllers
                     vm.User.UserID = 0;
                     _context.Add(vm.User);
                     await _context.SaveChangesAsync();
+                    user = vm.User;
                 }
 
                 var matchUser = await _context.MatchUsers.FirstOrDefaultAsync(u => u.MatchID == id && u.UserID == user.UserID);
@@ -168,7 +169,7 @@ namespace SquadEvent.Controllers
                         vm.MatchSideID = await _context.MatchSides.Where(s => s.MatchSideID == vm.MatchSideID && s.MatchID == id).Select(s => s.MatchSideID).FirstOrDefaultAsync();
                     }
                     matchUser = new MatchUser() { MatchID = id, UserID = vm.User.UserID, MatchSideID = vm.MatchSideID };
-                    if (await CanJoin(matchUser))
+                    if (matchUser.MatchSideID == null || await CanJoin(matchUser))
                     {
                         _context.Add(matchUser);
                         await _context.SaveChangesAsync();
@@ -281,6 +282,39 @@ namespace SquadEvent.Controllers
             roundSlot.MatchUserID = matchUser.MatchUserID;
             _context.Update(roundSlot);
             await _context.SaveChangesAsync();
+        }
+
+        [Authorize(Policy = "SteamID")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> LeaveSlot(int id, int roundSlotID)
+        {
+            var user = await GetUser();
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var matchUser = await _context.MatchUsers.FirstOrDefaultAsync(u => u.MatchID == id && u.UserID == user.UserID);
+            if (matchUser == null || matchUser.MatchSideID == null)
+            {
+                return NotFound();
+            }
+
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                var roundSlot = await _context.RoundSlots.FirstOrDefaultAsync(s => s.RoundSlotID == roundSlotID);
+                if (roundSlot.MatchUserID == matchUser.MatchUserID)
+                {
+                    roundSlot.MatchUserID = null;
+                    _context.Update(roundSlot);
+
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                }
+            }
+
+            return RedirectToAction(nameof(Subscription), new { id });
         }
 
         [HttpGet]

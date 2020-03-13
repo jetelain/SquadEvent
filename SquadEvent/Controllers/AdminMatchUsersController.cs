@@ -53,9 +53,9 @@ namespace SquadEvent.Controllers
             }
 
             var matchUser = await _context.MatchUsers
-                .Include(m => m.Match)
-                .Include(m => m.Side).ThenInclude(s => s.Rounds).ThenInclude(r => r.Round).ThenInclude(r => r.GameMap)
-                .Include(m => m.Side).ThenInclude(s => s.Rounds).ThenInclude(r => r.Round).ThenInclude(r => r.Sides).ThenInclude(r => r.Squads).ThenInclude(s => s.Slots)
+                .Include(m => m.Match).ThenInclude(s => s.Rounds).ThenInclude(r => r.GameMap)
+                .Include(m => m.Match).ThenInclude(s => s.Rounds).ThenInclude(r => r.Sides).ThenInclude(r => r.Squads).ThenInclude(s => s.Slots)
+                .Include(m => m.Side)
                 .Include(m => m.User)
                 .FirstOrDefaultAsync(m => m.MatchUserID == id);
             if (matchUser == null)
@@ -71,15 +71,15 @@ namespace SquadEvent.Controllers
         private void PrepareEditViewModel(MatchUserEditViewModel vm)
         {
             vm.MatchSideDropdownList = new SelectList(_context.MatchSides.Where(m => m.MatchID == vm.MatchUser.MatchID), "MatchSideID", "Name", vm.MatchUser.MatchSideID);
-            vm.SlotPerRound = vm.MatchUser.Side.Rounds.OrderBy(r => r.Round.Number).Select(r => CreateVM(r, vm.MatchUser)).ToList();
+            vm.SlotPerRound = vm.MatchUser.Match.Rounds.OrderBy(r => r.Number).Select(r => CreateVM(r, vm.MatchUser)).ToList();
         }
 
-        private UserRoundSlotViewModel CreateVM(RoundSide r, MatchUser matchUser)
+        private UserRoundSlotViewModel CreateVM(Round r, MatchUser matchUser)
         {
             return new UserRoundSlotViewModel()
             {
-                Round = r.Round,
-                RoundSlotID = r.Squads.SelectMany(s => s.Slots).FirstOrDefault(s => s.MatchUserID == matchUser.MatchUserID)?.RoundSlotID
+                Round = r,
+                RoundSlotID = r.Sides.SelectMany(s => s.Squads).SelectMany(s => s.Slots).FirstOrDefault(s => s.MatchUserID == matchUser.MatchUserID)?.RoundSlotID
             };
         }
 
@@ -103,24 +103,36 @@ namespace SquadEvent.Controllers
                     {
                         _context.Update(vm.MatchUser);
 
-                        var slotIds = vm.SlotPerRound.Where(s => s.RoundSlotID != null).Select(s => s.RoundSlotID).ToList();
-
-                        var previousSlots = await _context.RoundSlots.Where(s => !slotIds.Contains(s.RoundSlotID) && s.MatchUserID == vm.MatchUser.MatchUserID && s.Squad.Side.MatchSide.MatchSideID == vm.MatchUser.MatchSideID).ToListAsync();
-                        foreach (var slot in previousSlots)
+                        if (vm.MatchUser.MatchSideID == null)
                         {
-                            slot.MatchUserID = null;
-                            slot.SetTimestamp();
-                            _context.Update(slot);
+                            var previousSlots = await _context.RoundSlots.Where(s => s.MatchUserID == vm.MatchUser.MatchUserID).ToListAsync();
+                            foreach (var slot in previousSlots)
+                            {
+                                slot.MatchUserID = null;
+                                slot.SetTimestamp();
+                                _context.Update(slot);
+                            }
                         }
-
-                        var newSlots = await _context.RoundSlots.Where(s => slotIds.Contains(s.RoundSlotID) && s.Squad.Side.MatchSide.MatchSideID == vm.MatchUser.MatchSideID).ToListAsync();
-                        foreach (var slot in newSlots)
+                        else
                         {
-                            slot.MatchUserID = vm.MatchUser.MatchUserID;
-                            slot.SetTimestamp();
-                            _context.Update(slot);
-                        }
+                            var slotIds = vm.SlotPerRound.Where(s => s.RoundSlotID != null).Select(s => s.RoundSlotID).ToList();
 
+                            var previousSlots = await _context.RoundSlots.Where(s => !slotIds.Contains(s.RoundSlotID) && s.MatchUserID == vm.MatchUser.MatchUserID).ToListAsync();
+                            foreach (var slot in previousSlots)
+                            {
+                                slot.MatchUserID = null;
+                                slot.SetTimestamp();
+                                _context.Update(slot);
+                            }
+
+                            var newSlots = await _context.RoundSlots.Where(s => slotIds.Contains(s.RoundSlotID) && s.Squad.Side.MatchSide.MatchSideID == vm.MatchUser.MatchSideID).ToListAsync();
+                            foreach (var slot in newSlots)
+                            {
+                                slot.MatchUserID = vm.MatchUser.MatchUserID;
+                                slot.SetTimestamp();
+                                _context.Update(slot);
+                            }
+                        }
 
                         await _context.SaveChangesAsync();
 

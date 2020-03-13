@@ -22,7 +22,7 @@ a.navbar-brand {
 a {
     color: #000c14;
 }
-
+/*
 .btn-primary {
     color: #fff;
     background-color: #e8ab12;
@@ -59,7 +59,7 @@ a.badge-primary:hover, a.badge-primary:focus {
 .btn-outline-primary.disabled, .btn-outline-primary:disabled {
     color: #e8ab12;
 }
-
+    */
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
@@ -129,14 +129,19 @@ div.title {
     margin-top: -1em;
     margin-bottom: 1em;
 }
-
-div.title h1 {
+main div.title {
+    margin-top: 1em;
+    margin-bottom: 1em;
+    margin-left: -1em;
+    margin-right: -1em;
+}
+div.title h1, div.title h2, div.title h3 {
     text-transform: uppercase;
     padding: 2em 1em;
     margin: 0;
 }
 
-div.title h1 span {
+div.title h1 span, div.title h2 span, div.title h3 span {
     background-color: #000c14;
     color: white;
     box-shadow: 10px 0 0 #000c14,-10px 0 0 #000c14;

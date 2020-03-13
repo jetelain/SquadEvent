@@ -15,12 +15,10 @@ namespace SquadEvent.Models
         public Match Match { get; set; }
 
         [Display(Name = "J'accepte le traitement des données nécessaires à mon inscription")]
-        [Range(typeof(bool), "true", "true", ErrorMessage = "Il est nécessaire d'accepter le traitement des données.")]
         [Required]
         public bool AcceptSubscription { get; set; }
 
         [Display(Name ="J'ai lu et j'accepte le règlement de l'événement")]
-        [Range(typeof(bool), "true", "true", ErrorMessage = "Il est nécessaire d'accepter le règlement de l'événement.")]
         [Required]
         public bool AcceptMatchRules { get; set; }
     }
