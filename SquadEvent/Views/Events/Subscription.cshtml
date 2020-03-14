@@ -88,7 +88,7 @@ else if (Model.MatchUser.Side.Rounds.Any(r => !r.Squads.Any(s => s.Slots.Any(s =
                     <div class="col-md-6">
                         <h3 class="text-center">@side.Name</h3>
                         <p class="text-center text-muted">@Html.DisplayFor(model => side.SquadsPolicy)</p>
-                        @if (side.Users.Count() >= side.MaxUsersCount)
+                        @if (side.Users != null && side.Users.Count() >= side.MaxUsersCount)
                         {
                             <p class="text-center">
                                 <button class="btn btn-secondary disabled" disabled>Rejoindre @side.Name</button>
