@@ -7,7 +7,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - SquadEvent</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    @*<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />*@
+    <link href="https://stackpath.bootstrapcdn.com/bootswatch/4.4.1/slate/bootstrap.min.css" rel="stylesheet" integrity="sha384-G9YbB4o4U6WS4wCthMOpAeweY4gQJyyx0P3nZbEBHyz+AtNoeasfRChmek1C2iqV" crossorigin="anonymous" />
     <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Sans+Pro%7CRoboto%7CRoboto&#038;ver=1.0.0" />
     <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.0.6/css/all.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -15,7 +16,7 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-primary box-shadow mb-3">
             <div class="container">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">SquadEvent</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -25,15 +26,15 @@
                 <div class="navbar-collapse collapse">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="@ControllersName.Home" asp-action="Index">Home</a>
+                            <a class="nav-link" asp-area="" asp-controller="@ControllersName.Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="@ControllersName.Events" asp-action="Index">Événements</a>
+                            <a class="nav-link" asp-area="" asp-controller="@ControllersName.Events" asp-action="Index">Événements</a>
                         </li>
                         @if ((await AuthorizationService.AuthorizeAsync(User, "Admin")).Succeeded)
                         {
                             <li class="nav-item dropdown">
-                                <a class="nav-link text-dark dropdown-toggle" asp-area="" asp-controller="@ControllersName.Home" asp-action="Index" id="configDropdownMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <a class="nav-link dropdown-toggle" asp-area="" asp-controller="@ControllersName.Home" asp-action="Index" id="configDropdownMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     Administration
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="configDropdownMenu">
@@ -74,7 +75,7 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="footer text-muted">
         <div class="container">
             &copy; 2020 - <a asp-area="" asp-controller="Home" asp-action="Privacy">Mentions légales</a>
         </div>
